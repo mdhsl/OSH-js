@@ -50,7 +50,7 @@ OSH.Controller.prototype.setOptions = function(params) {
  * @param callback: the callback function by which the data is returned. It's the raw data from event.data of the WebSocket (including any timeStamp)
  */  
 OSH.Controller.prototype.addDataSource = function(object,url,name,timeStampParser,callback){
-  var uuid = getUUID();
+  var uuid = OSH.Utils.randomUUID();
   this.table.put(uuid,object);
   
   //creates Web Socket
@@ -81,11 +81,3 @@ OSH.Controller.prototype.addDataSource = function(object,url,name,timeStampParse
 OSH.Controller.prototype.addDataSourceObserver = function(observer) {
   this.buffer.addObserver(observer);
 };
-
-function getUUID(){
-  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-    return v.toString(16);
-  });
-}
-

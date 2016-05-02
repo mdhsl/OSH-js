@@ -44,12 +44,27 @@ OSH.Video = function(options) {
     var css = "";
     if(options.css) {
       css = options.css;
+      //find width to reset default value
+      //var width = OSH.Utils.getStyleRuleValue('width', '.'+css); // searches all sheets for the first .className rule and returns the set width style.
+      //var height = OSH.Utils.getStyleRuleValue('height', '.'+css); // searches all sheets for the first .className rule and returns the set height style.
+      //if(width != null) {
+      //  this.width = width;
+      //}
+      //if(height != null) {
+      //  this.height = height;
+      //}
+    }
+    
+    var id = OSH.Utils.randomUUID();
+    if(options.id) {
+      id = options.id;
     }
     
     var subParams = {
         width:this.width,
         height:this.height,
-        css: css
+        css: css,
+        id:id
     }
 
     if(this.format  == "mpeg") {
@@ -83,6 +98,9 @@ OSH.Video.Mp4 = function(div,options) {
     this.video.setAttribute("height", options.height);
     this.video.setAttribute("width", options.width);
     this.video.setAttribute("class", options.css);
+    if(options.id) {
+      this.video.setAttribute("id", options.id);
+    }
     // appends <video> tag to <div>
     div.appendChild(this.video);
     
@@ -133,6 +151,9 @@ OSH.Video.Mpeg = function(div,options) {
   this.imgTag.setAttribute("height", options.height);
   this.imgTag.setAttribute("width", options.width);
   this.imgTag.setAttribute("class", options.css);
+  if(options.id) {
+      this.imgTag.setAttribute("id", options.id);
+    }
   // appends <img> tag to <div>
   div.appendChild(this.imgTag);
 };
