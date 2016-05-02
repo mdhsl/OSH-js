@@ -67,7 +67,7 @@ OSH.Controller.prototype.addDataSource = function(object,url,name,timeStampParse
           timeStamp = timeStampParser(event.data);
       }
       
-      this.buffer.push(uuid, event.data, timeStamp , name, name+"-"+uuid);
+      this.buffer.push(uuid, event.data, timeStamp , name);
     }
   }.bind(this);
   ws.onerror = function(event) {
@@ -75,7 +75,7 @@ OSH.Controller.prototype.addDataSource = function(object,url,name,timeStampParse
   }
   
   this.buffer.register(uuid, callback);
-  return name+"-"+uuid;
+  return uuid;
 };
 
 OSH.Controller.prototype.addDataSourceObserver = function(observer) {

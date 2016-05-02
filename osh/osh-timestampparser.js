@@ -29,23 +29,6 @@ OSH.TimeStampParser.parseMpegVideo = function(data) {
    return new DataView(data).getFloat64(0, false) * 1000; // read double time stamp as big endian
 };
 
-/**
- * Parses the binary data to extract timeStamp. This method will extract the first 64 bits from the binary value given as parameter.
- */ 
-OSH.TimeStampParser.parseMp4Video = function(data) {
-   
-   /*if(!this.videoMp4Parser) {
-    this.videoMp4Parser = new OSH.TimeStampParser.VideoMP4();
-   }*/
-   //this.videoMp4Parser.parse(data);
-      var data = new Uint8Array(data);
-      var dataView = new DataView(event.data).getFloat64(48 * 8, false);
-      console.log(readNCC(dataView));
-      console.log(new Uint8Array(data));
-      return new Date().getTime();
-      
-};
-
 OSH.TimeStampParser.VideoMP4 = function() {
     this.absoluteTime = -1;
 };
@@ -73,7 +56,6 @@ OSH.TimeStampParser.VideoMP4.prototype.parse = function(data) {
         console.log("duration : "+infos.duration);
         console.log("rate : "+infos.rate);
         // end debug
-        console.log("FrameRate: "+this.pts+" --> "+infos.pts);
         return ((infos.pts*1000)*this.timeScale)+this.absoluteTime; // FPS to FPMS
     }
 };

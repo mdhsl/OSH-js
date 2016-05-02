@@ -41,17 +41,35 @@ OSH.Video = function(options) {
         this.format = "mpeg";
     } 
 
+    var css = "";
+    if(options.css) {
+      css = options.css;
+    }
+    
     var subParams = {
         width:this.width,
-        height:this.height
+        height:this.height,
+        css: css
     }
 
     if(this.format  == "mpeg") {
       this.video = new OSH.Video.Mpeg(document.getElementById(this.div),subParams);
     } else if(this.format == "mp4") {
       this.video = new OSH.Video.Mp4(document.getElementById(this.div),subParams);
+      this.timeStampParser = new OSH.TimeStampParser.VideoMP4();
     }
 };
+
+OSH.Video.prototype.parseTimeStamp = function(data) {
+    //TODO: find a way to keep "this" reference to use function assignment into constructor and avoid
+    //this test
+    //cannot assign a function directly without loosing this reference.
+    if(this.format  == "mpeg") {
+      return OSH.TimeStampParser.parseMpegVideo(data);
+    } else if(this.format == "mp4") {
+      return this.timeStampParser.parse(data);
+    }
+}
 
 OSH.Video.prototype.onDataCallback = function(data) {
     this.video.onDataCallback(data);
@@ -64,6 +82,7 @@ OSH.Video.Mp4 = function(div,options) {
     this.video = document.createElement("video");
     this.video.setAttribute("height", options.height);
     this.video.setAttribute("width", options.width);
+    this.video.setAttribute("class", options.css);
     // appends <video> tag to <div>
     div.appendChild(this.video);
     
@@ -107,15 +126,21 @@ OSH.Video.Mp4.prototype.onDataCallback = function(data) {
     }
 };
 
-
 //------------   MPEG -----------------//
-/*
-OSH.Video.Mpeg = {
-  
-  initialize: function (div, params) {
-    var imgElm = document.createElement("img");
-    imgElm.setAttribute("src", "images/hydrangeas.jpg");
-    imgElm.setAttribute("height", "768");
-    imgElm.setAttribute("width", "1024");
-  }
-}*/
+OSH.Video.Mpeg = function(div,options) {
+  // creates video tag element
+  this.imgTag = document.createElement("img");
+  this.imgTag.setAttribute("height", options.height);
+  this.imgTag.setAttribute("width", options.width);
+  this.imgTag.setAttribute("class", options.css);
+  // appends <img> tag to <div>
+  div.appendChild(this.imgTag);
+};
+
+OSH.Video.Mpeg.prototype.onDataCallback = function(data) {
+  var imgBlob = new Blob([data]);
+  var blobURL = window.URL.createObjectURL(imgBlob.slice(12));
+  var oldBlobURL = this.imgTag.src;
+  this.imgTag.src = blobURL;
+  window.URL.revokeObjectURL(oldBlobURL);
+};

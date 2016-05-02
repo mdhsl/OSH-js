@@ -73,7 +73,7 @@ Buffer.prototype.addObserver = function(observerCB){
  * Push the data into buffer and process them. The observers are notified that a data just come here.
  * If a buffering time has been defined, the processing will start after.
  */ 
-Buffer.prototype.push = function(id,data,timeStamp,type,name){
+Buffer.prototype.push = function(id,data,timeStamp,name){
    var datum = {
 		  id : id, 
 		  data : data, 
@@ -84,7 +84,7 @@ Buffer.prototype.push = function(id,data,timeStamp,type,name){
 	this.buffer.push(datum);
   
   // notifies the observers
-  this.callbackObservers(type,name,timeStamp,data);
+  this.callbackObservers(id,name,timeStamp,data);
   
   // update the start data time if needed
   if(this.startDataTime > datum.timeStamp) {
@@ -164,20 +164,21 @@ Buffer.prototype.callbackData = function(){
 /**
  * Callback stats to observers
  */ 
-Buffer.prototype.callbackObservers = function(type,id,timeStamp,data) {
+Buffer.prototype.callbackObservers = function(id,name,timeStamp,data) {
   if(this.observers.length > 0){
       //callback  to observers
-      var percent = ((timeStamp - this.startRealTime) * 100 ) / (this.endRealTime - this.startRealTime);
+      //var percent = ((timeStamp - this.startRealTime) * 100 ) / (this.endRealTime - this.startRealTime);
       for(var i = 0; i < this.observers.length; i++){
         var callback = this.observers[i];
         callback(
           {
-            percent : percent.toFixed(2),
-            type : type,
-            id: name,
+           // percent : percent.toFixed(2),
+            percent:0,
+            name : name,
+            id: id,
             timeStamp : timeStamp,
-            received : new Date().getTime(),
-            data : data
+            received : new Date().getTime()
+            //data : data //useless overload system
           }
         );
       }
