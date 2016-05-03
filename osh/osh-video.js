@@ -6,12 +6,12 @@ window.OSH.Video = OSH.Video;
 
 /**
  * The OSH.Video component is designed to decode and render video data.
- * Two format are supported for now: mp4 and mpeg.
- * The mpeg format uses the default blob and <img> tag implementation whereas the mp4 
+ * Two format are supported for now: mp4 and mjpeg.
+ * The mjpeg format uses the default blob and <img> tag implementation whereas the mp4 
  * format uses the Media Source Extended API and so the <video> tag.
  * The format can be specified as a constructor parameter as well as width and height such as:
  * params:{
- *  format:"mpeg"/"mp4",
+ *  format:"mjpeg"/"mp4",
  *  width:"500px",
  *  height:"500px"
  * }
@@ -37,8 +37,8 @@ OSH.Video = function(options) {
     }
     
     // sets mpeg mpeg format if specified
-    if(options.format && options.format == "mpeg") {
-        this.format = "mpeg";
+    if(options.format && options.format == "mjpeg") {
+        this.format = "mjpeg";
     } 
 
     var css = "";
@@ -67,8 +67,8 @@ OSH.Video = function(options) {
         id:id
     }
 
-    if(this.format  == "mpeg") {
-      this.video = new OSH.Video.Mpeg(document.getElementById(this.div),subParams);
+    if(this.format  == "mjpeg") {
+      this.video = new OSH.Video.Mjpeg(document.getElementById(this.div),subParams);
     } else if(this.format == "mp4") {
       this.video = new OSH.Video.Mp4(document.getElementById(this.div),subParams);
       this.timeStampParser = new OSH.TimeStampParser.VideoMP4();
@@ -79,7 +79,7 @@ OSH.Video.prototype.parseTimeStamp = function(data) {
     //TODO: find a way to keep "this" reference to use function assignment into constructor and avoid
     //this test
     //cannot assign a function directly without loosing this reference.
-    if(this.format  == "mpeg") {
+    if(this.format  == "mjpeg") {
       return OSH.TimeStampParser.parseMpegVideo(data);
     } else if(this.format == "mp4") {
       return this.timeStampParser.parse(data);
@@ -144,8 +144,8 @@ OSH.Video.Mp4.prototype.onDataCallback = function(data) {
     }
 };
 
-//------------   MPEG -----------------//
-OSH.Video.Mpeg = function(div,options) {
+//------------   MJPEG -----------------//
+OSH.Video.Mjpeg = function(div,options) {
   // creates video tag element
   this.imgTag = document.createElement("img");
   this.imgTag.setAttribute("height", options.height);
@@ -158,7 +158,7 @@ OSH.Video.Mpeg = function(div,options) {
   div.appendChild(this.imgTag);
 };
 
-OSH.Video.Mpeg.prototype.onDataCallback = function(data) {
+OSH.Video.Mjpeg.prototype.onDataCallback = function(data) {
   var imgBlob = new Blob([data]);
   var blobURL = window.URL.createObjectURL(imgBlob.slice(12));
   var oldBlobURL = this.imgTag.src;

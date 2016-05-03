@@ -1,7 +1,6 @@
 var instanceController = null;
 
 OSH.Controller = function() {
-  this.table = new Hashtable();
   this.buffer = Buffer.getBufferSingleton();
   this.tableEvents = new Hashtable();
 };
@@ -49,9 +48,8 @@ OSH.Controller.prototype.setOptions = function(params) {
  * the time stamp has to be defined and cannot be NULL
  * @param callback: the callback function by which the data is returned. It's the raw data from event.data of the WebSocket (including any timeStamp)
  */  
-OSH.Controller.prototype.addDataSource = function(object,url,name,timeStampParser,callback){
+OSH.Controller.prototype.addDataSource = function(url,name,timeStampParser,callback){
   var uuid = OSH.Utils.randomUUID();
-  this.table.put(uuid,object);
   
   //creates Web Socket
   var ws = new WebSocket(url);
