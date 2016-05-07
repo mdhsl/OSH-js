@@ -68,31 +68,26 @@ OSH.Video = function(options) {
     }
 
     if(this.format  == "mjpeg") {
-      this.video = new OSH.Video.Mjpeg(document.getElementById(this.div),subParams);
+      this.player = new OSH.Video.Mjpeg(document.getElementById(this.div),subParams);
     } else if(this.format == "mp4") {
-      this.video = new OSH.Video.Mp4(document.getElementById(this.div),subParams);
-      this.timeStampParser = new OSH.TimeStampParser.VideoMP4();
+      this.player = new OSH.Video.Mp4(document.getElementById(this.div),subParams);
     }
 };
 
+
 OSH.Video.prototype.parseTimeStamp = function(data) {
-    //TODO: find a way to keep "this" reference to use function assignment into constructor and avoid
-    //this test
-    //cannot assign a function directly without loosing this reference.
-    if(this.format  == "mjpeg") {
-      return OSH.TimeStampParser.parseMpegVideo(data);
-    } else if(this.format == "mp4") {
-      return this.timeStampParser.parse(data);
-    }
+   return this.player.parseTimeStamp(data);
 }
 
 OSH.Video.prototype.onDataCallback = function(data) {
-    this.video.onDataCallback(data);
+    this.player.onDataCallback(data);
 };
 
 //------------ MP4 -------------------/
 
 OSH.Video.Mp4 = function(div,options) {
+    this.timeStampParser = new OSH.TimeStampParser.VideoMP4();
+    
     // creates video tag element
     this.video = document.createElement("video");
     this.video.setAttribute("height", options.height);
@@ -100,13 +95,13 @@ OSH.Video.Mp4 = function(div,options) {
     this.video.setAttribute("class", options.css);
     if(options.id) {
       this.video.setAttribute("id", options.id);
-    }
+    } 
     // appends <video> tag to <div>
     div.appendChild(this.video);
     
     // creates MediaSource object
     this.mediaSource = new MediaSource();
-    this.buffer = null;
+    this.sourceBuffer = null;
     this.queue = [];
     
     this.video.src = window.URL.createObjectURL(this.mediaSource);
@@ -115,33 +110,39 @@ OSH.Video.Mp4 = function(div,options) {
       this.mediaSource.duration = 10000000;
       this.video.play();
 
-      this.buffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001E"');
+      this.sourceBuffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001E"');
+      this.sourceBuffer.pendingAppends = [];
+      this.sourceBuffer.addEventListener('updateend', this.onUpdateEnd.bind(this));
 
-      this.buffer.addEventListener('updatestart', function(e) { /*console.log('updatestart: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('update', function(e) { /*console.log('update: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('updateend', function(e) { /*console.log('updateend: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState); */});
-
-      this.buffer.addEventListener('update', function() { // Note: Have tried 'updateend'
-        if(this.queue.length > 0 && !this.buffer.updating) {
-          this.buffer.appendBuffer(this.queue.shift());
-        }
-      }.bind(this));
     }.bind(this), false);
 
-    this.mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState); */});
-    this.mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState); */});
-    this.mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState); */});
     this.mediaSource.addEventListener('error', function(e) { console.log('error: ' + this.mediaSource.readyState); });
+    
+};
+
+OSH.Video.Mp4.prototype.onUpdateEnd = function() {
+    if (this.sourceBuffer.updating === false && this.sourceBuffer.pendingAppends.length > 0) {
+      this.sourceBuffer.appendBuffer(this.sourceBuffer.pendingAppends.shift());
+    } 
+}
+    
+OSH.Video.Mp4.prototype.parseTimeStamp = function(data) {
+  return this.timeStampParser.parse(data);
 };
 
 OSH.Video.Mp4.prototype.onDataCallback = function(data) {
-    if (this.buffer.updating || this.queue.length > 0) {
-      this.queue.push(data);
+    var newData = new Uint8Array(data);
+    //if(this.timeStampParser.absoluteTime > 0){
+        //truncates the data by removing the moov part
+    //    newData = newData.subarray(692, newData.byteLength);
+    //} 
+    /*if (this.buffer.updating || this.queue.length > 0) {
+      this.queue.push(newData);
     } else {
-      this.buffer.appendBuffer(data);
-    }
+      this.buffer.appendBuffer(newData);
+    }*/
+    this.sourceBuffer.pendingAppends.push(newData);
+    this.onUpdateEnd.call(this);
 };
 
 //------------   MJPEG -----------------//
@@ -156,6 +157,10 @@ OSH.Video.Mjpeg = function(div,options) {
     }
   // appends <img> tag to <div>
   div.appendChild(this.imgTag);
+};
+
+OSH.Video.Mjpeg.prototype.parseTimeStamp = function(data) {
+  return OSH.TimeStampParser.parseMpegVideo(data);
 };
 
 OSH.Video.Mjpeg.prototype.onDataCallback = function(data) {

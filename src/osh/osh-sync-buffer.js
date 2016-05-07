@@ -15,9 +15,9 @@ var STATE = {
  */ 
 var Buffer = function(){
 	this.startCurrentTime = null;
-	this.startDataTime = new Date().getTime();
+	this.startDataTime = null;
 	this.endDataTime = null;
-	this.replayFactor = null;
+	this.replayFactor = 1;
 	this.buffer = new Array();
 	this.clientTable = new Hashtable();
 	this.observers = new Array();
@@ -77,17 +77,30 @@ Buffer.prototype.push = function(id,data,timeStamp,name){
    var datum = {
 		  id : id, 
 		  data : data, 
-		  timeStamp : timeStamp
+		  timeStamp : timeStamp,
+      name:name
 	  }
 	
   // pushes data into the buffer
 	this.buffer.push(datum);
   
+  if(this.synchronized) {
+     this.buffer.sort(function (a, b) {
+         if (a.timeStamp > b.timeStamp) {
+           return 1;
+         }
+         if (a.timeStamp < b.timeStamp) {
+           return -1;
+         }
+         return 0;
+     });
+  }
+    
   // notifies the observers
-  this.callbackObservers(id,name,timeStamp,data);
+  this.callbackObservers(id,name,timeStamp,data,'before');
   
   // update the start data time if needed
-  if(this.startDataTime > datum.timeStamp) {
+  if(this.startDataTime == null || this.startDataTime > datum.timeStamp) {
     this.startDataTime = datum.timeStamp;
   }	
   
@@ -100,18 +113,6 @@ Buffer.prototype.push = function(id,data,timeStamp,name){
 
   // the buffering is done, start to send back data to the corresponding clients
   if(this.bufferState == STATE.READY) {
-    if(this.synchronized) {
-      this.buffer.sort(function (a, b) {
-          if (a.timeStamp > b.timeStamp) {
-            return 1;
-          }
-          if (a.timeStamp < b.timeStamp) {
-            return -1;
-          }
-          return 0;
-      });
-    }
-    
     // the buffer is empty and the processNextData recursive method is finished, so process the data and start a new 
     // recursive loop
     if(this.buffer.length == 1) {
@@ -125,15 +126,19 @@ Buffer.prototype.push = function(id,data,timeStamp,name){
  */ 
 Buffer.prototype.processNextData = function(){
   // computes the ellasped time
-	var currentEllapsedTime = new Date().getTime() - this.startCurrentTime;
+	//var currentEllapsedTime = new Date().getTime();
+  var currentEllapsedTime = new Date().getTime() - this.startCurrentTime;
   // if the buffer has data
 	if(this.buffer.length > 0) {
 		var next = this.buffer[0];
     var waitTime = -1;
     if(this.synchronized) {
+      //(dataTimeStamp - startBufferTime) - (currentTime - endBufferTimer)
+      // => (bufferLengthTime + dataTimeStamp  - currentTime)
 		  waitTime = (((next.timeStamp-this.startDataTime) / this.replayFactor) - currentEllapsedTime);
+      console.log("("+new Date(next.timeStamp).toISOString()+" - "+new Date(this.startDataTime).toISOString()+") - "+currentEllapsedTime+" = "+waitTime);
     }
-  
+    
     // this is not true in case of real time data    
     if(waitTime > 0) {
       //callback the data after waiting for a time equals to the difference between the two timeStamps
@@ -141,6 +146,7 @@ Buffer.prototype.processNextData = function(){
         this.callbackData();
       }.bind(this),waitTime);
     } else {
+        console.log("no wait time");
         // in case of real time data, the data is callback directly
         this.callbackData();
     }
@@ -154,8 +160,10 @@ Buffer.prototype.callbackData = function(){
   // removes the first elements of buffer
 	var next = this.buffer.shift();
 	if(typeof(next) != 'undefined' && !isNaN(next.timeStamp)){
+    // notifies the observers
+    this.callbackObservers(next.id,next.name,next.timeStamp,[],'after');
     // callback the data to the client
-		this.clientTable.get(next.id)(next.data);
+    this.clientTable.get(next.id)(next.data);
 	}
   // recursive call
 	this.processNextData();
@@ -164,7 +172,7 @@ Buffer.prototype.callbackData = function(){
 /**
  * Callback stats to observers
  */ 
-Buffer.prototype.callbackObservers = function(id,name,timeStamp,data) {
+Buffer.prototype.callbackObservers = function(id,name,timeStamp,data,status) {
   if(this.observers.length > 0){
       //callback  to observers
       //var percent = ((timeStamp - this.startRealTime) * 100 ) / (this.endRealTime - this.startRealTime);
@@ -177,7 +185,8 @@ Buffer.prototype.callbackObservers = function(id,name,timeStamp,data) {
             name : name,
             id: id,
             timeStamp : timeStamp,
-            received : new Date().getTime()
+            received : new Date().getTime(),
+            status:status
             //data : data //useless overload system
           }
         );
