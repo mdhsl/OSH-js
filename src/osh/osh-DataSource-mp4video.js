@@ -1,40 +1,11 @@
-OSH.TimeStampParser = {
-	version: 'dev'
-};
-
-window.OSH.TimeStampParser = OSH.TimeStampParser;
-
-var UTCAndroidShiftTime = 16 * 1000;
-
-/**
- * Utility class to extract timeStamp from various data.
- */ 
-OSH.TimeStampParser = function() {}
-
-
-/**
- *  Parses the text to extract timeStamp. This method is specific for android timeStamp because of the UTC shift time used by android.
- */  
-OSH.TimeStampParser.parseAndroidText = function(data) {
-  var rec = String.fromCharCode.apply(null, new Uint8Array(data));
-  var tokens = rec.trim().split(",");
-  var date = new Date(tokens[0]);
-  return date.getTime() - UTCAndroidShiftTime;
-};
-
-/**
- * Parses the binary data to extract timeStamp. This method will extract the first 64 bits from the binary value given as parameter.
- */ 
-OSH.TimeStampParser.parseMpegVideo = function(data) {
-   return new DataView(data).getFloat64(0, false) * 1000; // read double time stamp as big endian
-};
-
-OSH.TimeStampParser.VideoMP4 = function() {
+OSH.DataSource.VideoMp4DataSource = Class.create(OSH.DataSource.DataSource,{
+  initialize: function($super,name,url) {
+    $super(name,url);
     this.absoluteTime = -1;
-};
-
-OSH.TimeStampParser.VideoMP4.prototype.parse = function(data) {
-    // got the first box => MVDH
+  },
+  
+  parseTimeStamp: function($super,data){
+     // got the first box => MVDH
     if(this.absoluteTime == -1) {
         var infos = readMP4Info(data);
         
@@ -58,7 +29,8 @@ OSH.TimeStampParser.VideoMP4.prototype.parse = function(data) {
         // end debug
         return ((infos.pts*1000)*this.timeScale)+this.absoluteTime; // FPS to FPMS
     }
-};
+  }
+});
 
 function readMP4Info(data) {
     var infos = {
@@ -96,7 +68,7 @@ function readMP4Info(data) {
     //infos.rate = (new DataView(data,pos,pos+4).getUint32(0));
     
     return infos;
-}
+};
 
 function readNCC(bytes,n) {
    var res = "";
@@ -104,5 +76,4 @@ function readNCC(bytes,n) {
      res += String.fromCharCode(bytes[i]);
    }
    return res;
- }
-
+};
