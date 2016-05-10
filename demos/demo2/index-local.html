@@ -1,0 +1,102 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>Test x264 Video decoding</title>
+    
+    <!-- Hashtable -->
+    <script type="text/javascript" src= "js-local/src/common/jhashtable.js"></script>
+    <script type="text/javascript" src= "js-local/src/common/prototype.min.js"></script>
+    
+    <!-- OSH Core -->
+    <script type="text/javascript" src="js-local/src/osh/osh-template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="js-local/src/osh/osh-utils.js"></script>
+    
+    <script type="text/javascript" src="js-local/src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="js-local/src/osh/osh-Controller.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="js-local/src/osh/osh-DataSourceConnector.js"></script>
+    <script type="text/javascript" src="js-local/src/osh/osh-DataSourceConnector-Websocket.js"></script>
+    <script type="text/javascript" src="js-local/src/osh/osh-DataSource.js"></script>
+    <script type="text/javascript" src="js-local/src/osh/osh-DataSource-mjpegvideo.js"></script>
+    <script type="text/javascript" src="js-local/src/osh/osh-DataSourceProvider.js"></script>
+<style media="screen" type="text/css">
+section {
+  margin: auto;
+}
+
+.container-vertical {
+  width:650px;
+  float: left;
+}
+
+.container-vertical-2 {
+}
+
+</style>
+  </head>
+    <body>
+     <h2>This is a test video for OSH-JS Api</h2>
+     <h3>Use of two seperate Video dataSource + dataProvider: will get synchronize after 2015-02-16-T08:01:xx</h3>
+     <h3>Use Options: { Buffering:5000, synchronizedTime: true }</h3>
+     <section>
+        <div class="container-vertical">
+          <button type="button" onclick="load()">Load</button>
+          <div id="timestamp">Time: </div>
+          <div id="container-video"><img id="img1" height="480" width="640"></img></div>
+        </div>
+        <div class="container-vertical-2">
+          <button type="button" onclick="load2()">Load</button>
+          <div id="timestamp-2">Time: </div>
+          <div id="container-video-2"><img id="img2" height="480" width="640"></img></div>
+        </div>
+      </section>
+     
+       
+      <script type="text/javascript">
+          var videoDataSource1 = new OSH.DataSource.VideoMjpegDataSource("video1","ws://sensiasoft.net:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,2015-02-16T08:00:00Z/2015-02-16T08:09:00Z&replaySpeed=3");
+          var videoDataSource2 = new OSH.DataSource.VideoMjpegDataSource("video2","ws://sensiasoft.net:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,2015-02-16T08:01:00Z/2015-02-16T08:09:00Z&replaySpeed=3");
+          
+          var dataSourceProvider = new OSH.DataSource.DataSourceProvider({
+             bufferingTime:5*1000, // 5 seconds
+             synchronizedTime: true, // sync the data
+             replayFactor:3
+          });
+          
+          dataSourceProvider.addDataSource(videoDataSource1);
+          dataSourceProvider.addDataSource(videoDataSource2);
+          
+          function load() {
+              videoDataSource1.connect();
+          }
+          
+          function load2() {
+              videoDataSource2.connect();
+          }
+          
+          var divTimeStampDiv1 = document.getElementById("timestamp");
+          var divTimeStampDiv2 = document.getElementById("timestamp-2");
+          var imgSrcDiv1       = document.getElementById("img1");
+          var imgSrcDiv2       = document.getElementById("img2");
+          
+          dataSourceProvider.onData = function (id,data){
+              if(id == videoDataSource1.getId()) {
+                  divTimeStampDiv1.innerHTML = "TimeStamp: "+new Date(data.timeStamp).toISOString();
+                  var oldBlobURL = imgSrcDiv1.src;
+                  imgSrcDiv1.src = data.data;
+                  window.URL.revokeObjectURL(oldBlobURL);
+              } else if (id == videoDataSource2.getId()) {
+                  divTimeStampDiv2.innerHTML = "TimeStamp: "+new Date(data.timeStamp).toISOString();
+                  var oldBlobURL = imgSrcDiv2.src;
+                  imgSrcDiv2.src = data.data;
+                  window.URL.revokeObjectURL(oldBlobURL);
+              }
+          };
+          
+      </script>
+        
+    </body>
+</html>

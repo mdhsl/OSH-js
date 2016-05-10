@@ -10,11 +10,11 @@ OSH.Video = {
 
 window.OSH.Video = OSH.Video;
 
-OSH.View = {
+OSH.UI = {
 	version: 'dev'
 };
 
-window.OSH.View = OSH.View;
+window.OSH.UI = OSH.UI;
 
 OSH.DataSource = {
 	version: 'dev'

@@ -11,5 +11,5 @@ OSH.DataSource.VideoMjpegDataSource = Class.create(OSH.DataSource.DataSource,{
     var imgBlob = new Blob([data]);
     var blobURL = window.URL.createObjectURL(imgBlob.slice(12));
     return blobURL;
-  }
+  } 
 });
