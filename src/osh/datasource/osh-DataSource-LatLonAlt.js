@@ -3,7 +3,8 @@ OSH.DataSource.LatLonAltDataSource = Class.create(OSH.DataSource.DataSource,{
   parseTimeStamp: function($super,data){
     var rec = String.fromCharCode.apply(null, new Uint8Array(data));
     var tokens = rec.trim().split(",");
-    return parseFloat(tokens[0]);
+    var t =  new Date(tokens[0]).getTime();
+    return t;
   },
   
   parseData: function($super,data){

@@ -1,7 +1,7 @@
 OSH.DataSource.DataSource = Class.create({
   initialize: function(name,url) {
     // checks if type is WebSocket
-    if(url.startsWith("ws://")) {
+    if(url && url.trim().startsWith("ws://")) {
       this.connector = new OSH.DataSource.WebSocketDataSourceConnector(url);
       // connects the callback 
       this.connector.onMessage = this.onMessage.bind(this);
