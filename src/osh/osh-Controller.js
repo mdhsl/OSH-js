@@ -26,7 +26,7 @@ OSH.Controller = Class.create({
         $(oshView.divId).observe("click", function(event) {
           if(event.target.id.startsWith("DataSource-")) {
             for(var i = 0; i < this.views.length;i++) {
-              this.views[i].selectDataView(event.target.id);
+              this.views[i].selectDataView([event.target.id]);
             }
           }
         }.bind(this));
