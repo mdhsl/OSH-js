@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>Test OSH-js API</title>
+    
+    <script type="text/javascript" src= "js/osh-all.min.js"></script>
+  </head>
+  <body>
+   <h2>This is a test video for OSH-JS Api</h2>
+   <h3>Simple use of MP4 Viewer</h3>
+    <div class="container-vertical">
+      <label for="url">WebSocket Url:</label> 
+      <input type="text" name="url" id="url"  size="50"/>
+      <button type="button" onclick="load()">Load</button>
+      <div id="timestamp">Time: </div>
+      <div id="container-video"></div>
+    </div>
+    <script type="text/javascript">
+      function load() {
+        var url = document.getElementById('url').value;
+        loadStream(url);
+      }
+      function loadStream(url) {
+          var dataSourceProvider = new OSH.DataSource.DataSourceProvider({
+             bufferingTime:2*1000, // 5 seconds
+             synchronizedTime: false // does not sync the data
+          });
+          
+          var videoDataSource = new OSH.DataSource.VideoMp4DataSource("video1",url);
+          
+          //a view can be fed by a same stream
+          var oshVideoView = new OSH.UI.Mp4View("container-video",{
+            width: "640",
+            height: "480",
+            codecs:"avc1.42401F"
+          });
+          
+          
+          dataSourceProvider.addDataSource(videoDataSource);
+          
+          //set dataView
+          oshVideoView.setDataViewId(videoDataSource.getId());
+          
+           //CONTROLLER
+          var controller = new OSH.Controller();
+          controller.addDataSourceProvider(dataSourceProvider);
+          controller.addView(oshVideoView);
+          
+          videoDataSource.connect();
+       
+      } // end load
+    </script>
+  </body>
+</html>

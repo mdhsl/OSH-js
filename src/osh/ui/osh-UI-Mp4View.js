@@ -18,6 +18,12 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
       css = options.css;
     }
     
+    this.codecs = "avc1.64001E";
+    
+    if(options.codecs) {
+      this.codecs = options.codecs;
+    }
+    
     // creates video tag element
     this.video = document.createElement("video");
     this.video.setAttribute("height", height);
@@ -37,8 +43,8 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
       this.mediaSource.duration = 10000000;
       this.video.play();
 
-      this.buffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="avc1.64001E"');
-
+      this.buffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="'+this.codecs+'"');
+      
       this.buffer.addEventListener('updatestart', function(e) { /*console.log('updatestart: ' + mediaSource.readyState); */});
       this.buffer.addEventListener('update', function(e) { /*console.log('update: ' + mediaSource.readyState); */});
       this.buffer.addEventListener('updateend', function(e) { /*console.log('updateend: ' + mediaSource.readyState); */});
