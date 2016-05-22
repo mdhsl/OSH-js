@@ -19,6 +19,7 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
     }
     
     this.codecs = "avc1.64001E";
+    //this.codecs="avc1.42401F";
     
     if(options.codecs) {
       this.codecs = options.codecs;
@@ -45,23 +46,27 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
 
       this.buffer = this.mediaSource.addSourceBuffer('video/mp4; codecs="'+this.codecs+'"');
       
-      this.buffer.addEventListener('updatestart', function(e) { /*console.log('updatestart: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('update', function(e) { /*console.log('update: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('updateend', function(e) { /*console.log('updateend: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState); */});
-      this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState); */});
+      var mediaSource = this.mediaSource;
+      
+      this.buffer.addEventListener('updatestart', function(e) { /*console.log('updatestart: ' + mediaSource.readyState);*/ });
+      this.buffer.addEventListener('update', function(e) { /*console.log('update: ' + mediaSource.readyState);*/ });
+      this.buffer.addEventListener('updateend', function(e) { /*console.log('updateend: ' + mediaSource.readyState);*/ });
+      this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
+      this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
 
       this.buffer.addEventListener('update', function() { // Note: Have tried 'updateend'
-        if(this.queue.length > 0 && !this.buffer.updating) {
+        while(this.queue.length > 0 && !this.buffer.updating) {
           this.buffer.appendBuffer(this.queue.shift());
         }
       }.bind(this));
     }.bind(this), false);
 
-    this.mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState); */});
-    this.mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState); */});
-    this.mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState); */});
-    this.mediaSource.addEventListener('error', function(e) { console.log('error: ' + this.mediaSource.readyState); });
+     var mediaSource = this.mediaSource;
+      
+    this.mediaSource.addEventListener('sourceopen', function(e) { /*console.log('sourceopen: ' + mediaSource.readyState);*/ });
+    this.mediaSource.addEventListener('sourceended', function(e) { /*console.log('sourceended: ' + mediaSource.readyState);*/ });
+    this.mediaSource.addEventListener('sourceclose', function(e) { /*console.log('sourceclose: ' + mediaSource.readyState);*/ });
+    this.mediaSource.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
     
   },
   

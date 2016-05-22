@@ -1,6 +1,6 @@
 OSH.DataSource.VideoMp4DataSource = Class.create(OSH.DataSource.DataSource,{
-  initialize: function($super,name,url) {
-    $super(name,url);
+  initialize: function($super,name,url,options) {
+    $super(name,url,options);
     this.absoluteTime = -1;
   },
   

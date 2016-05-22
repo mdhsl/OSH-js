@@ -48,11 +48,19 @@ OSH.Buffer = Class.create({
     this.replayFactor = factor;
   },
 
+  getReplayFactor: function() {
+    return this.replayFactor;
+  },
+  
   /**
    * Add observer to be notified when a data is handling
    */  
   addObserver: function(observer) {
     this.observers.push(observer);
+  },
+
+  setStartDate: function(date) {
+	  this.startDataTime = date.getTime();
   },
 
   /**

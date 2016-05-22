@@ -87,6 +87,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
     var dataMarker= {
       orientationDataViewId: '',
       latLonDataViewId:'',
+      associatedDataViews: [],
       entity: entity
     };
     
@@ -95,7 +96,11 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
     }
     
     if(params.latLonDataViewId) {
-       dataMarker.orientationDataViewId = params.latLonDataViewId;
+       dataMarker.latLonDataViewId = params.latLonDataViewId;
+    }
+    
+    if(params.associatedDataViews) {
+      dataMarker.associatedDataViews = params.associatedDataViews;
     }
     
     this.dataMarkers.push(dataMarker);
@@ -117,9 +122,9 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
     for(var i=0;i < this.dataMarkers.length;i++) {
       var dataMarker = this.dataMarkers[i];
       if(dataMarker.orientationDataViewId == dataViewId) {
-        this.updateDataMarkerPosition(dataMarker, data);
-      } else if(dataMarker.latLonDataViewId == dataViewId) {
         this.updateDataMarkerOrientation(dataMarker,data);
+      } else if(dataMarker.latLonDataViewId == dataViewId) {
+        this.updateDataMarkerPosition(dataMarker, data);
       }
     }
   },
@@ -153,14 +158,39 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
   },
   
   selectDataView: function($super,idArr) {
+    var select = false;
     for(var i=0;i < this.dataMarkers.length; i++) {
       var dataMarker = this.dataMarkers[i];
-      if(idArr.indexOf(dataMarker.orientationDataViewId) >=0 ){
+      if(idArr.indexOf(dataMarker.latLonDataViewId) >=0 ||
+         idArr.indexOf(dataMarker.orientationDataViewId) >=0) {
+         select = true;
+      } else {
+        for(var j= 0 ; j < dataMarker.associatedDataViews.length;j++) {
+          var associatedView = dataMarker.associatedDataViews[j];
+          if(idArr.indexOf(associatedView) >=0) {
+            select = true;
+            break;
+          }
+        }
+      }
+      if(select) {
+        break;
+      }
+    }
+    if(select) {
+      //select entity
+      this.viewer.selectedEntity =  dataMarker.entity;                                      
+      //this.viewer.trackedEntity =  dataMarker.entity;
+    }
+      /*if(idArr.indexOf(dataMarker.latLonDataViewId) >=0 ||
+         idArr.indexOf(dataMarker.orientationDataViewId) >=0 ||
+         idArr.filter(function(n) {
+              return dataMarker.associatedViews.indexOf(n) != -1;
+         })){
         //select entity
         this.viewer.selectedEntity =  dataMarker.entity;                                      
         //this.viewer.trackedEntity =  dataMarker.entity;
         break;
-      } 
-    }
+      } */
   }
 });

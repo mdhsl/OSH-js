@@ -1,5 +1,5 @@
 OSH.DataSource.DataSource = Class.create({
-  initialize: function(name,url) {
+  initialize: function(name,url,options) {
     // checks if type is WebSocket
     if(url && url.trim().startsWith("ws://")) {
       this.connector = new OSH.DataSource.WebSocketDataSourceConnector(url);
@@ -7,6 +7,12 @@ OSH.DataSource.DataSource = Class.create({
       this.connector.onMessage = this.onMessage.bind(this);
       this.id = "DataSource-"+OSH.Utils.randomUUID();
       this.name = name;
+    }
+    
+    this.androidShift = 0;
+    
+    if(options.androidShift) {
+      this.androidShift = 16 * 1000;  
     }
   },
   

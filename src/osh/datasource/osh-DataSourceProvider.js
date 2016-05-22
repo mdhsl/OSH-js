@@ -20,6 +20,26 @@ OSH.DataSource.DataSourceProvider = Class.create({
     this.dataSources = [];
   },
   
+  setBufferingTime : function(bufferingTime) {
+     this.buffer.setDelay(bufferingTime);
+  },
+  
+  setReplayFactor : function(replayFactor) {
+    this.buffer.setReplayFactor(replayFactor);
+  },
+  
+  setSynchronized : function(synchronizeTime) {
+    this.buffer.setSynchronized(synchronizeTime);
+  },
+  
+  setStartDate : function(startTime) {
+    this.buffer.setStartDate(startTime);
+  },
+  
+  getReplayFactor : function() {
+    return this.buffer.getReplayFactor();
+  },
+  
   addDataSource: function(dataSource) {
     this.dataSources.push(dataSource);
     this.buffer.register(dataSource.getId(),function(data) {
