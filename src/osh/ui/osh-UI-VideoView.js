@@ -33,5 +33,14 @@ OSH.UI.VideoView = Class.create(OSH.UI.View,{
   
   hasDataView: function($super,dataViewId) {
       return this.videoView.hasDataView(dataViewId);
+  },
+  
+  ////////////
+  selectDataView:function(dataViewId) {
+    this.videoView.setDataViewId(dataViewId);
+  },
+    
+  addAssociatedDataViews: function(associatedViews) {
+    this.videoView.addAssociatedDataViews(associatedViews);
   }
 });
