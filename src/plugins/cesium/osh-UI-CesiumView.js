@@ -74,6 +74,14 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
   },
   
   addDataMarker: function(params) {
+    if(!params.orientationDataViewId || !params.latLonDataViewId){
+        return;
+    }
+    
+    if(params.orientationDataViewId == null && params.latLonDataViewId == null) {
+      return;
+    }
+    
     // gps position
     var entity = this.viewer.entities.add({
         position: Cesium.Cartesian3.fromDegrees(0, 0, 0),
@@ -91,11 +99,11 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
       entity: entity
     };
     
-    if(params.orientationDataViewId) {
+    if(params.orientationDataViewId && params.orientationDataViewId != null) {
       dataMarker.orientationDataViewId = params.orientationDataViewId;
     }
     
-    if(params.latLonDataViewId) {
+    if(params.latLonDataViewId && params.latLonDataViewId != null) {
        dataMarker.latLonDataViewId = params.latLonDataViewId;
     }
     
@@ -182,15 +190,5 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View,{
       this.viewer.selectedEntity =  dataMarker.entity;                                      
       //this.viewer.trackedEntity =  dataMarker.entity;
     }
-      /*if(idArr.indexOf(dataMarker.latLonDataViewId) >=0 ||
-         idArr.indexOf(dataMarker.orientationDataViewId) >=0 ||
-         idArr.filter(function(n) {
-              return dataMarker.associatedViews.indexOf(n) != -1;
-         })){
-        //select entity
-        this.viewer.selectedEntity =  dataMarker.entity;                                      
-        //this.viewer.trackedEntity =  dataMarker.entity;
-        break;
-      } */
   }
 });

@@ -44,6 +44,7 @@ OSH.UI.MJpegView = Class.create(OSH.UI.View,{
   setDataViewId: function(dataViewId) {
     this.dataViewId = dataViewId;
     this.imgTag.setAttribute("id", dataViewId);
+    this.imgTag.src = '';
   },
   
   hasDataView: function($super,dataViewId) {
