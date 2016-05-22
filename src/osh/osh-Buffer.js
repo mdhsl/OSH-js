@@ -196,9 +196,9 @@ OSH.Buffer = Class.create({
    * Starts buffering data
    */ 
   start: function(){
+    this.startCurrentTime = new Date().getTime();
     window.setTimeout(function(){
       this.bufferState = STATE.READY;
-      this.startCurrentTime = new Date().getTime();
       this.processNextData();
      }.bind(this),this.bufferDelay);
   },

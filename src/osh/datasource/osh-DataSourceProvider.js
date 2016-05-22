@@ -2,10 +2,10 @@ OSH.DataSource.DataSourceProvider = Class.create({
   initialize: function(options) {
     this.buffer = new OSH.Buffer();
     if(options.startTime) {
-      this.buffer.setStartDate(options.startTime);
+      this.buffer.setStartDate(new Date(options.startTime));
     }
     if(options.endTime) {
-      this.buffer.setEndDate(options.endTime);
+      this.buffer.setEndDate(new Date(options.endTime));
     }
     if(options.replayFactor) {
       this.buffer.setReplayFactor(options.replayFactor);

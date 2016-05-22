@@ -28,6 +28,7 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
     // creates video tag element
     this.video = document.createElement("video");
     this.video.setAttribute("height", height);
+    this.video.setAttribute("control", '');
     this.video.setAttribute("width", width);
     this.video.setAttribute("class", css);
     // appends <video> tag to <div>
@@ -48,14 +49,18 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
       
       var mediaSource = this.mediaSource;
       
-      this.buffer.addEventListener('updatestart', function(e) { /*console.log('updatestart: ' + mediaSource.readyState);*/ });
-      this.buffer.addEventListener('update', function(e) { /*console.log('update: ' + mediaSource.readyState);*/ });
+      this.buffer.addEventListener('updatestart', function(e) { 
+        /*console.log('updatestart: ' + mediaSource.readyState);*/ 
+        if(this.queue.length > 0 && !this.buffer.updating) {
+          this.buffer.appendBuffer(this.queue.shift());
+        }
+      }.bind(this));
       this.buffer.addEventListener('updateend', function(e) { /*console.log('updateend: ' + mediaSource.readyState);*/ });
       this.buffer.addEventListener('error', function(e) { /*console.log('error: ' + mediaSource.readyState);*/ });
       this.buffer.addEventListener('abort', function(e) { /*console.log('abort: ' + mediaSource.readyState);*/ });
 
       this.buffer.addEventListener('update', function() { // Note: Have tried 'updateend'
-        while(this.queue.length > 0 && !this.buffer.updating) {
+        if(this.queue.length > 0 && !this.buffer.updating) {
           this.buffer.appendBuffer(this.queue.shift());
         }
       }.bind(this));

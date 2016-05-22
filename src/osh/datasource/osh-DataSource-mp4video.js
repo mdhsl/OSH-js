@@ -27,6 +27,7 @@ OSH.DataSource.VideoMp4DataSource = Class.create(OSH.DataSource.DataSource,{
         //console.log("duration : "+infos.duration);
         //console.log("rate : "+infos.rate);
         // end debug
+        
         return ((infos.pts*1000)*this.timeScale)+this.absoluteTime; // FPS to FPMS
     }
   }

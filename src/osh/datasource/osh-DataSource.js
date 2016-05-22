@@ -11,7 +11,7 @@ OSH.DataSource.DataSource = Class.create({
     
     this.androidShift = 0;
     
-    if(options.androidShift) {
+    if(typeof(options) != "undefined"  && options.androidShift) {
       this.androidShift = 16 * 1000;  
     }
   },
