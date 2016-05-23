@@ -21,6 +21,7 @@ java -jar compiler.jar \
  src/osh/datasource/osh-DataSource-video.js \
  src/osh/datasource/osh-DataSource-OrientationQuaternionDataSource.js \
  src/osh/datasource/osh-DataSource-LatLonAlt.js \
+ src/osh/datasource/osh-DataSource-ChartDataSource.js \
  src/osh/datasource/osh-DataSourceProvider.js \
  src/osh/ui/osh-UI-View.js \
  src/osh/ui/osh-UI-MJpegView.js \
