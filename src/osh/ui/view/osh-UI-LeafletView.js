@@ -4,7 +4,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		// creates the leaflet renderer
 		this.renderer = new OSH.UI.LeafletRenderer(divId);
 		
-		this.stylerToMarker = new Hashtable();
+		this.stylerToObj = new Hashtable();
 	},
 	
 	/**
@@ -15,30 +15,62 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 			this.viewItems.push(viewItem);
 			var styler = viewItem.styler;
 			this.stylers.push(styler);
-			
-			// adds a new marker to the leaflet renderer
-			var markerId = this.renderer.addMarker({
-				lat:styler.location.y,
-				lon:styler.location.x,
-				orientation:styler.orientation.yaw,
-				color:styler.color,
-				icon:styler.icon
-			});
-			
-			this.stylerToMarker.put(styler.getId(),markerId);
-			
 		}
 	},
 	
 	updateMarker: function(styler) {
-		var markerId = this.stylerToMarker.get(styler.getId());
+		var markerId = 0;
+		
+		if(!this.stylerToObj.containsKey(styler.getId())) {
+			// adds a new marker to the leaflet renderer
+			markerId = this.renderer.addMarker({
+				lat:styler.location.y,
+				lon:styler.location.x,
+				orientation:styler.orientation.heading,
+				color:styler.color,
+				icon:styler.icon
+			});
+			
+			this.stylerToObj.put(styler.getId(),markerId);
+		} else {
+			markerId = this.stylerToObj.get(styler.getId());
+		}
 		
 		this.renderer.updateMarker(markerId,{
 			lat:styler.location.y,
 			lon:styler.location.x,
-			orientation:styler.orientation.yaw,
+			orientation:styler.orientation.heading,
 			color:styler.color,
 			icon:styler.icon
+		});
+	},
+	
+	updatePolyline: function(styler) {
+		var polylineId = 0;
+		
+		if(!this.stylerToObj.containsKey(styler.getId())) {
+			// adds a new marker to the leaflet renderer
+			polylineId = this.renderer.addPolyline({
+				color:styler.color,
+				weight:styler.weight,
+				locations:styler.locations,
+				maxPoints:styler.maxPoints,
+				opacity:styler.opacity,
+				smoothFactor:styler.smoothFactor
+			});
+			
+			this.stylerToObj.put(styler.getId(),polylineId);
+		} else {
+			polylineId = this.stylerToObj.get(styler.getId());
+		}
+		
+		this.renderer.updatePolyline(polylineId,{
+			color:styler.color,
+			weight:styler.weight,
+			locations:styler.locations,
+			maxPoints:styler.maxPoints,
+			opacity:styler.opacity,
+			smoothFactor:styler.smoothFactor
 		});
 	},
 	

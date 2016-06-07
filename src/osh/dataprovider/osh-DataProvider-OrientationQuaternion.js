@@ -37,6 +37,6 @@ OSH.DataProvider.OrientationQuaternion = Class.create(OSH.DataProvider.DataProvi
     var yaw = 90 - (180/Math.PI*Math.atan2(yp, xp));
     
     //TODO: computes roll & pitch values
-    return { yaw: yaw, roll: null, pitch:null};
+    return { heading: yaw, roll: null, pitch:null};
   } 
 });

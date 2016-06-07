@@ -5,13 +5,14 @@ OSH.UI.LeafletRenderer = Class.create(OSH.UI.Renderer,{
 	},
 	
 	init:function() {
-	 this.map = new L.Map(this.divId, {
+	  this.map = new L.Map(this.divId, {
          fullscreenControl: true
       });
       this.map.setView(new L.LatLng(0, 0), 15);
       this.initLayers();
       this.markers = new Hashtable();
       this.first = true;
+      this.polylines = new Hashtable();
 	},
 	
 	initLayers: function() {
@@ -68,11 +69,64 @@ OSH.UI.LeafletRenderer = Class.create(OSH.UI.Renderer,{
         // updates orientation
         marker.setRotationAngle(properties.orientation);
         
-        if(properties.icon != null) {
+        if(properties.icon != null && marker._icon.iconUrl != properties.icon) {
         	// updates icon
-        	marker.setIcon(properties.icon);
+        	var markerIcon = L.icon({
+		        iconAnchor: [16, 16],
+		        iconUrl: properties.icon
+		    });
+        	marker.setIcon(markerIcon);
         }
         
+        if(this.first) {
+            this.map.setView(new L.LatLng(lat, lon), this.map.getZoom());
+            this.first = false;
+        }  
+	},
+	
+	addPolyline: function(properties) {
+		var polylinePoints = [];
+		
+		for(var i=0;i < properties.locations.length;i++) {
+			polylinePoints.push(new L.LatLng(properties.locations[i].y, properties.locations[i].x));
+        }
+		
+		//create path
+		var polyline = new L.Polyline(polylinePoints, {
+			color: properties.color,
+			weight: properties.weight,
+			opacity: properties.opacity,
+			smoothFactor: properties.smootFactor
+		}).addTo(this.map);
+		
+		var id = "view-polyline-"+OSH.Utils.randomUUID();
+		this.polylines.put(id,polyline);
+		
+		return id;
+	},
+	
+	updatePolyline: function(id,properties) {
+		if(this.polylines.containsKey(id)) {
+			var polyline = this.polylines.get(id);
+			
+			// removes the layer
+	        this.map.removeLayer(polyline);
+	        
+	        var polylinePoints = [];
+	        for(var i=0;i < properties.locations.length;i++) {
+	        	polylinePoints.push(new L.LatLng(properties.locations[i].y, properties.locations[i].x));
+	        }
+	        
+	        //create path
+			var polyline = new L.Polyline(polylinePoints, {
+				color: properties.color,
+				weight: properties.weight,
+				opacity: properties.opacity,
+				smoothFactor: properties.smoothFactor
+			}).addTo(this.map);
+			
+			this.polylines.put(id,polyline);
+		}
 	}
 });
 

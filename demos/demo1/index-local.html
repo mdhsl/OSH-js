@@ -31,12 +31,14 @@
     <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider.js"></script>
     <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProviderController.js"></script>
     <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-LatLonAlt.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-OrientationQuaternion.js"></script>
     
     <script type="text/javascript" src="../../src/osh/ui/renderer/osh-UI-Renderer.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/renderer/osh-UI-LeafletRenderer.js"></script>
     
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPolyline.js"></script>
     
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
     <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-LeafletView.js"></script>
@@ -67,28 +69,57 @@
 	    });
 	    
      	// creates datasource
-     	var dataSource = new OSH.DataProvider.LatLonAlt("gps1","ws://sensiasoft.net:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-16T08:01:00Z/2015-02-16T08:09:00Z&replaySpeed=3");
-
+     	var latLondataSource = new OSH.DataProvider.LatLonAlt("gps1","ws://sensiasoft.net:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/Location&temporalFilter=phenomenonTime,2015-02-16T08:01:00Z/2015-02-16T08:09:00Z&replaySpeed=3");
+     	var orientationDataSource = new OSH.DataProvider.OrientationQuaternion("orient1","ws://sensiasoft.net:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:060693280a28e015-sos&observedProperty=http://sensorml.com/ont/swe/property/OrientationQuaternion&temporalFilter=phenomenonTime,2015-02-16T08:01:00Z/2015-02-16T08:09:00Z&replaySpeed=3");
+     	
+     	
      	// creates view
       	var view = new OSH.UI.LeafletView("container");
      	
-     	// creates styler
-     	var styler = new OSH.UI.Styler.PointMarker({
+     	// creates stylers
+     	var markerStyler = new OSH.UI.Styler.PointMarker({
      		  location: {x:10, y:20, z:30},
      		  locationFunc: {
-     			 	dataSourceId: dataSource.getId(),
+     			 	dataSourceId: latLondataSource.getId(),
      		        handler: function(rec) {
      		            return {x: rec.lon, y: rec.lat, z: rec.alt};
+     		        }
+     		    },
+     		    icon : '../../src/images/cameralook.png',
+     		    orientationFunc: {
+     		    	dataSourceId: orientationDataSource.getId(),
+     		        handler: function(rec) {
+     		            return {heading:rec.heading};
      		        }
      		    }
      	});
 
+     	var polylineStyler = new OSH.UI.Styler.Polyline({
+   		  locationFunc: {
+   			 	dataSourceId: latLondataSource.getId(),
+   		        handler: function(rec) {
+   		            return {x: rec.lon, y: rec.lat, z: rec.alt};
+   		        }
+   		    },
+   		    color: 'blue',
+   		 	weight: 5,
+         	opacity: .5,
+         	smoothFactor: 1,
+         	maxPoints:200
+   		});
+     	
      	// adds view item to the view
      	view.addViewItem({
-     		styler: styler
+     		styler: markerStyler
      	});
      	
-      	dataProviderController.addDataSource(dataSource);
+     	view.addViewItem({
+     		styler: polylineStyler
+     	});
+     	
+     	// adds datasources to dataProviderController
+      	dataProviderController.addDataSource(latLondataSource);
+      	dataProviderController.addDataSource(orientationDataSource);
       	
      	// registers the view into the data provider
       	dataProviderController.registerObserver(view);
