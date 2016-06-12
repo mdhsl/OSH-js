@@ -20,7 +20,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	updateMarker: function(styler) {
 		var markerId = 0;
 		
-		if(!styler.getId() in this.stylerToObj) {
+		if(!(styler.getId() in this.stylerToObj)) {
 			// adds a new marker to the leaflet renderer
 			markerId = this.addMarker({
 				lat:styler.location.y,
@@ -35,7 +35,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 			markerId = this.stylerToObj[styler.getId()];
 		}
 		
-		this.renderer.updateMarker(markerId,{
+		this.updateMapMarker(markerId,{
 			lat:styler.location.y,
 			lon:styler.location.x,
 			orientation:styler.orientation.heading,
@@ -47,7 +47,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	updatePolyline: function(styler) {
 		var polylineId = 0;
 		
-		if(!styler.getId() in this.stylerToObj) {
+		if(!(styler.getId() in this.stylerToObj)) {
 			// adds a new marker to the leaflet renderer
 			polylineId = this.addPolyline({
 				color:styler.color,
@@ -63,7 +63,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 			polylineId = this.stylerToObj[styler.getId()];
 		}
 		
-		this.renderer.updatePolyline(polylineId,{
+		this.updateMapPolyline(polylineId,{
 			color:styler.color,
 			weight:styler.weight,
 			locations:styler.locations,
@@ -131,7 +131,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	    return id;
 	},
 	
-	updateMarker: function(id,properties) {
+	updateMapMarker: function(id,properties) {
 		var marker =  this.markers[id];
 		// updates position
         var lon = properties.lon;
@@ -181,7 +181,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		return id;
 	},
 	
-	updatePolyline: function(id,properties) {
+	updateMapPolyline: function(id,properties) {
 		if(id in this.polylines) {
 			var polyline = this.polylines[id];
 			
