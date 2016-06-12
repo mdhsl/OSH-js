@@ -4,24 +4,24 @@ OSH.UI.VideoView = Class.create(OSH.UI.View, {
 
 		var type = "";
 
-		if (typeof (options) && options.type) {
-			type = options.type;
+		if (typeof (options) && options.format) {
+			format = options.format;
 		}
 
 		this.videoView = null;
 
-		if (type == "mp4") {
+		if (format == "mp4") {
 			this.videoView = new OSH.UI.Mp4View(divId, options);
-		} else if (type == "h264") {
+		} else if (format == "h264") {
 			this.videoView = new OSH.UI.H264View(divId, options);
-		} else (type == "mjpeg") {
+		} else if(format == "mjpeg") {
 			this.videoView = new OSH.UI.MJpegView(divId, options);
 		}
 	},
 	
 	setData: function(dataSourceId,data) {
 		if(this.videoView != null) {
-			this.videoView.setData(data);
+			this.videoView.setData(dataSourceId,data);
 		}
 	}
 });

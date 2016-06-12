@@ -1,4 +1,4 @@
-OSH.DataProvider.VideoH264 = Class.create(OSH.DataSource.DataSource,{
+OSH.DataProvider.VideoH264 = Class.create(OSH.DataProvider.DataProvider,{
   initialize: function($super,name,url,options) {
     $super(name,url,options);
   },

@@ -6,7 +6,9 @@ OSH.DataConnector.WebSocketDataConnector = Class.create(OSH.DataConnector.DataCo
       this.ws.binaryType = 'arraybuffer';
       this.ws.onmessage = function(event) {
         //callback data on message received
-        this.onMessage(event.data);
+    	if(event.data.byteLength > 0) {
+    	  this.onMessage(event.data);
+    	}
       }.bind(this);
     }
   }
