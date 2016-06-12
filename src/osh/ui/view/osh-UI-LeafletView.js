@@ -2,7 +2,6 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	initialize:function($super,divId, properties) {
 		$super(divId);
 		this.stylerToObj = {};
-		
 		this.initMap();
 	},
 	

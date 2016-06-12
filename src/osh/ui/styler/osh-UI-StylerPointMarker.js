@@ -57,7 +57,7 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 			this.dataSourceToStylerMap[dataSourceId](rec.data);
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined"){
-				view.updateMarker(this);
+				view.updateMarker(this,rec.timeStamp);
 			}
 		}
 	}
