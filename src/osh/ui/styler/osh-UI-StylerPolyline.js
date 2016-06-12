@@ -37,41 +37,41 @@ OSH.UI.Styler.Polyline = Class.create(OSH.UI.Styler, {
 					this.locations.shift();
 				}
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.locationFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.locationFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.colorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.colorFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.colorFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.weightFunc) != "undefined") {
 			var fn = function(rec) {
 				this.weight = properties.weightFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.weightFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.weightFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.opacityFunc) != "undefined") {
 			var fn = function(rec) {
 				this.opacity = properties.opacityFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.opacityFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.opacityFunc.dataSourceId] = fn; 
 		}
 		
 		if(typeof(properties.smoothFactorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.smoothFactor = properties.smoothFactorFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.smoothFactorFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.smoothFactorFunc.dataSourceId] = fn;
 		}
 	},
 	
 	setData: function($super,dataSourceId,rec,view) {
-		if(this.dataSourceToStylerMap.containsKey(dataSourceId)) {
-			this.dataSourceToStylerMap.get(dataSourceId)(rec.data);
+		if (dataSourceId in this.dataSourceToStylerMap) {
+			this.dataSourceToStylerMap[dataSourceId](rec.data);
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined"){
 				view.updatePolyline(this);

@@ -27,34 +27,34 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 			var fn = function(rec) {
 				this.location = properties.locationFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.locationFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.locationFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.orientationFunc) != "undefined") {
 			var fn = function(rec) {
 				this.orientation = properties.orientationFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.orientationFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.orientationFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.iconFunc) != "undefined") {
 			var fn = function(rec) {
 				this.icon = properties.iconFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.iconFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.iconFunc.dataSourceId] = fn;
 		}
 		
 		if(typeof(properties.colorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap.put(properties.colorFunc.dataSourceId,fn);
+			this.dataSourceToStylerMap[properties.colorFunc.dataSourceId] = fn;
 		}
 	},
 	
 	setData: function($super,dataSourceId,rec,view) {
-		if(this.dataSourceToStylerMap.containsKey(dataSourceId)) {
-			this.dataSourceToStylerMap.get(dataSourceId)(rec.data);
+		if (dataSourceId in this.dataSourceToStylerMap) {
+			this.dataSourceToStylerMap[dataSourceId](rec.data);
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined"){
 				view.updateMarker(this);

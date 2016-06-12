@@ -16,7 +16,7 @@ OSH.Buffer = Class.create({
 	  this.endDataTime = null;
 	  this.replayFactor = 1;
 	  this.buffer = new Array();
-    this.clientTable = new Hashtable();
+    this.clientTable = {};
     this.observers = new Array();
     this.bufferState = 0;
     this.bufferDelay = 0; // default buffering time in ms
@@ -154,7 +154,7 @@ OSH.Buffer = Class.create({
       // notifies the observers
       this.callbackObservers(next.id,next.name,next.timeStamp,[],'after');
       // callback the data to the client
-      this.clientTable.get(next.id)( {timeStamp:next.timeStamp, data:next.data});
+      this.clientTable[next.id]( {timeStamp:next.timeStamp, data:next.data});
     }
     // recursive call
     this.processNextData();
@@ -189,7 +189,7 @@ OSH.Buffer = Class.create({
    *  Registers a new client
    */ 
   register:function(id,callback) {
-    this.clientTable.put(id,callback);
+    this.clientTable[id] = callback;
   },
   
   /**
