@@ -37,41 +37,51 @@ OSH.UI.Styler.Polyline = Class.create(OSH.UI.Styler, {
 					this.locations.shift();
 				}
 			}.bind(this);
-			this.dataSourceToStylerMap[properties.locationFunc.dataSourceId] = fn;
+			this.addFn(properties.locationFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.colorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap[properties.colorFunc.dataSourceId] = fn;
+			this.addFn(properties.colorFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.weightFunc) != "undefined") {
 			var fn = function(rec) {
 				this.weight = properties.weightFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap[properties.weightFunc.dataSourceId] = fn;
+			this.addFn(properties.weightFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.opacityFunc) != "undefined") {
 			var fn = function(rec) {
 				this.opacity = properties.opacityFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap[properties.opacityFunc.dataSourceId] = fn; 
+			this.addFn(properties.opacityFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.smoothFactorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.smoothFactor = properties.smoothFactorFunc.handler(rec);
 			}.bind(this);
-			this.dataSourceToStylerMap[properties.smoothFactorFunc.dataSourceId] = fn;
+			this.addFn(properties.smoothFactorFunc.dataSourceId,fn);
 		}
+	},
+	
+	addFn : function(dataSourceId, fn) {
+		if(typeof(this.dataSourceToStylerMap[dataSourceId]) == "undefined") {
+			this.dataSourceToStylerMap[dataSourceId] = [];
+		}
+		this.dataSourceToStylerMap[dataSourceId].push(fn);
 	},
 	
 	setData: function($super,dataSourceId,rec,view) {
 		if (dataSourceId in this.dataSourceToStylerMap) {
-			this.dataSourceToStylerMap[dataSourceId](rec.data);
+			var fnArr = this.dataSourceToStylerMap[dataSourceId];
+			for(var i=0; i < fnArr.length;i++) {
+				fnArr[i](rec.data);
+			}
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined"){
 				view.updatePolyline(this);

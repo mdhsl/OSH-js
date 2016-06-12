@@ -52,6 +52,12 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 		}
 	},
 	
+	selectDataView: function($super,dataSourceIds) {
+		for(var i=0;i < this.stylers.length;i++) {
+			this.stylers[i].select(dataSourceIds);
+		}
+	},
+	
 	//---------- MAP SETUP --------------//
 	init : function() {
 		this.markers = {};
@@ -99,6 +105,7 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
         var lon = properties.lon;
         var lat = properties.lat;
         var alt = properties.lat;
+        var imgIcon = properties.icon;
         
         if (!isNaN(lon) && !isNaN(lat) && !isNaN(alt)) {
         	var marker =  this.markers[id];
@@ -113,7 +120,8 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
     		}
 
     		marker.position = Cesium.Cartesian3.fromDegrees(lon, lat, altitude);
-
+    		marker.billboard.image = imgIcon;
+    		
     		if (this.first && this.viewer.trackedEntity != 'undefined') {
     			this.viewer.zoomTo(this.viewer.entities, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(-10), Cesium.Math.toRadians(-30),3000));
     			this.first = false;

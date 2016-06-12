@@ -78,6 +78,12 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		}
 	},
 	
+	selectDataView: function($super,dataSourceIds) {
+		for(var i=0;i < this.stylers.length;i++) {
+			this.stylers[i].select(dataSourceIds);
+		}
+	},
+	
 	//---------- MAP SETUP --------------//
 	initMap:function() {
 		  this.map = new L.Map(this.divId, {
@@ -126,6 +132,24 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	    
 	    var id = "view-marker-"+OSH.Utils.randomUUID();
 	    this.markers[id] = marker;
+	    
+	    var self = this;
+	    
+	    // adds onclick event
+	    marker.on('click',function(){
+	    	var memo = [];
+	    	for (var styler in self.stylerToObj) {
+	    		if(self.stylerToObj[styler] == id) {
+	    			for(var i=0;i < self.stylers.length;i++) {
+		    			if(self.stylers[i].getId() == styler) {
+			    			memo = memo.concat(self.stylers[i].getDataSourceIds());
+			    			break;
+		    			}
+	    			}
+	    		}
+	    	}
+	    	$(self.divId).fire("osh:select", memo);
+	    });
 	    
 	    return id;
 	},

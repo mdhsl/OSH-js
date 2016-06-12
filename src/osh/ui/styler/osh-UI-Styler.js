@@ -10,6 +10,7 @@ OSH.UI.Styler = Class.create({
     
     getId: function() {
     	return this.id;
-    }
+    },
     
+    select: function(dataSourceIds) {}
 });
