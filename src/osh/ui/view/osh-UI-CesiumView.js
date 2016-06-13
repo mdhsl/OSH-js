@@ -3,6 +3,9 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 		$super(divId);
 		this.stylerToObj = {};
 		this.init();
+		this.lastRec = {};
+		this.selectedDataSources = [];
+		this.dataSources = [];
 	},
 
 	/**
@@ -46,15 +49,24 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 		});
 	},
 
-	setData : function(dataSourceId, data) {
-		for (var i = 0; i < this.stylers.length; i++) {
-			this.stylers[i].setData(dataSourceId, data, this);
+	setData: function(dataSourceId,data) {
+		if(this.dataSources.indexOf(dataSourceId) == -1) {
+			this.dataSources.push(dataSourceId);
+		}
+		var selected = (this.selectedDataSources.indexOf(dataSourceId) > -1);
+		
+		for(var i=0;i < this.stylers.length;i++) {
+			this.stylers[i].setData(dataSourceId,data,this,{
+				selected:selected
+			});
+			this.lastRec[dataSourceId] = data;
 		}
 	},
 	
 	selectDataView: function($super,dataSourceIds) {
-		for(var i=0;i < this.stylers.length;i++) {
-			this.stylers[i].select(dataSourceIds);
+		this.selectedDataSources = dataSourceIds;
+		for(var j=0; j < this.dataSources.length;j++) {
+			this.setData(this.dataSources[j],this.lastRec[this.dataSources[j]]);
 		}
 	},
 	
@@ -77,6 +89,25 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 			showRenderLoopErrors : false,
 			animation:false
 	    });
+	    
+	    var self = this;
+	    Cesium.knockout.getObservable(this.viewer, '_selectedEntity').subscribe(function(entity) {
+	        //change icon
+	        if (Cesium.defined(entity)) {
+	        	var memo = [];
+		    	for (var styler in self.stylerToObj) {
+		    		if(self.stylerToObj[styler] == entity._dsid) {
+		    			for(var i=0;i < self.stylers.length;i++) {
+			    			if(self.stylers[i].getId() == styler) {
+				    			memo = memo.concat(self.stylers[i].getDataSourceIds());
+				    			break;
+			    			}
+		    			}
+		    		}
+		    	}
+		    	$(self.divId).fire("osh:select", memo);
+	        }
+	    }.bind(this));
 	},
 	
 	addMarker : function(properties) {
@@ -96,7 +127,9 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
 		});
 
 		var id = "view-marker-"+OSH.Utils.randomUUID();
+		entity._dsid = id;
 		this.markers[id] = entity;
+		
 		return id;
 	},
 	

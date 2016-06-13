@@ -25,7 +25,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 		}
 
 		var useWorker = false;
-		var reuseMemory = true;
+		var reuseMemory = false;
 		var webgl = "auto";
 		this.hasSps = false;
 

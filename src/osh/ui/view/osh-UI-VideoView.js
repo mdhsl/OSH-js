@@ -23,5 +23,11 @@ OSH.UI.VideoView = Class.create(OSH.UI.View, {
 		if(this.videoView != null) {
 			this.videoView.setData(dataSourceId,data);
 		}
+	},
+	
+	selectDataView: function($super,dataSourceIds) {
+		if(this.videoView != null) {
+			this.videoView.selectDataView(dataSourceIds);
+		}
 	}
 });

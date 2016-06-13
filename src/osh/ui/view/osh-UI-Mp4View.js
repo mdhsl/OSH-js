@@ -11,6 +11,7 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
     var width = "640";
     var height = "480";
     var css = "";
+    this.cssSelected = "";
     
     if(options.width) {
       width = options.width;
@@ -22,6 +23,10 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
     
     if(options.css) {
       css = options.css;
+    }
+    
+    if(options.cssSelected) {
+    	this.cssSelected = options.cssSelected;
     }
     
     this.codecs = "avc1.64001E";
@@ -89,5 +94,12 @@ OSH.UI.Mp4View = Class.create(OSH.UI.View,{
 	      this.buffer.appendBuffer(data.data);
 	    }
 	}
+  },
+  
+  selectDataView: function($super,dataSourceIds) {
+	  document.getElementById(this.divId).setAttribute("class","");
+	  if(dataSourceIds.indexOf(this.dataSourceId) > -1) {
+		  document.getElementById(this.divId).setAttribute("class",this.cssSelected);  
+	  }
   }
 });

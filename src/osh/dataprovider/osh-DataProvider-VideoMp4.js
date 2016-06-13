@@ -1,6 +1,6 @@
 OSH.DataProvider.VideoMp4 = Class.create(OSH.DataProvider.DataProvider,{
-  initialize: function($super,name,url,options) {
-    $super(name,url,options);
+  initialize: function($super,name,properties,options) {
+    $super(name,properties,options);
     this.absoluteTime = -1;
   },
   
@@ -43,10 +43,10 @@ function readMP4Info(data) {
   
    var pos = 60; // 60 bytes
     // starts at 60 bytes length
-   	console.log(data.byteLength);
+   	//console.log(data.byteLength);
     infos.absoluteTime = new DataView(data,pos,pos+8).getUint32(0); //8 bytes length but takes the  last four
     infos.absoluteTime = (infos.absoluteTime - 2082844800)*1000;
-    console.log(new Date(infos.absoluteTime).toISOString());
+    //console.log(new Date(infos.absoluteTime).toISOString());
     pos += 8;
     
     //modification time// 32 bits

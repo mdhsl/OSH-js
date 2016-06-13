@@ -37,43 +37,46 @@ OSH.UI.Styler.Polyline = Class.create(OSH.UI.Styler, {
 					this.locations.shift();
 				}
 			}.bind(this);
-			this.addFn(properties.locationFunc.dataSourceId,fn);
+			this.addFn(properties.locationFunc.dataSourceIds,fn);
 		}
 		
 		if(typeof(properties.colorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.color = properties.colorFunc.handler(rec);
 			}.bind(this);
-			this.addFn(properties.colorFunc.dataSourceId,fn);
+			this.addFn(properties.colorFunc.dataSourceIds,fn);
 		}
 		
 		if(typeof(properties.weightFunc) != "undefined") {
 			var fn = function(rec) {
 				this.weight = properties.weightFunc.handler(rec);
 			}.bind(this);
-			this.addFn(properties.weightFunc.dataSourceId,fn);
+			this.addFn(properties.weightFunc.dataSourceIds,fn);
 		}
 		
 		if(typeof(properties.opacityFunc) != "undefined") {
 			var fn = function(rec) {
 				this.opacity = properties.opacityFunc.handler(rec);
 			}.bind(this);
-			this.addFn(properties.opacityFunc.dataSourceId,fn);
+			this.addFn(properties.opacityFunc.dataSourceIds,fn);
 		}
 		
 		if(typeof(properties.smoothFactorFunc) != "undefined") {
 			var fn = function(rec) {
 				this.smoothFactor = properties.smoothFactorFunc.handler(rec);
 			}.bind(this);
-			this.addFn(properties.smoothFactorFunc.dataSourceId,fn);
+			this.addFn(properties.smoothFactorFunc.dataSourceIds,fn);
 		}
 	},
 	
-	addFn : function(dataSourceId, fn) {
-		if(typeof(this.dataSourceToStylerMap[dataSourceId]) == "undefined") {
-			this.dataSourceToStylerMap[dataSourceId] = [];
+	addFn : function(dataSourceIds, fn) {
+		for(var i = 0; i < dataSourceIds.length; i++) {
+			var dataSourceId = dataSourceIds[i];
+			if(typeof(this.dataSourceToStylerMap[dataSourceId]) == "undefined") {
+				this.dataSourceToStylerMap[dataSourceId] = [];
+			}
+			this.dataSourceToStylerMap[dataSourceId].push(fn);
 		}
-		this.dataSourceToStylerMap[dataSourceId].push(fn);
 	},
 	
 	setData: function($super,dataSourceId,rec,view,options) {

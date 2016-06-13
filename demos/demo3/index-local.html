@@ -5,9 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <title>OSH Leaflet viewer</title>
     
-    <script type="text/javascript" src= "../../vendor/broadway/broadway-all.min.js"></script>
-    <script type="text/javascript" src= "../../vendor/broadway/YUVCanvas.js"></script>
     <script type="text/javascript" src= "../../vendor/broadway/Decoder.js"></script>
+    <script type="text/javascript" src= "../../vendor/broadway/YUVCanvas.js"></script>
     <script type="text/javascript" src= "../../vendor/broadway/Player.js"></script>
     
     <script type="text/javascript" src= "../../src/common/prototype.min.js"></script>
@@ -50,35 +49,16 @@
 </head>
     <body>
      <h2>This is an example of MP4 RealTime data use</h2>
-     <section style="display:inline;float:left;margin-right:60px">
-	     <div>
-	     	<h3>Madison android video mjpeg</h3>
-	     	<div id="madison-android-video-mjpeg"></div>
-	     </div>
-	     <div>
-	     	<h3>Madison virb1 video h264</h3>
-	     	<div id="madison-virb1-video-mp4"></div>
-	     </div>
-     </section>
-     <section style="display:inline;float:right;margin-right:50%">
-	     <div>
-	     	<h3>Madison virb2 video Mp4</h3>
-	     	<div id="madison-virb2-video-h264"></div>
-	     </div>
-	     <div>
-	     	<h3>Madison flir video mjpeg</h3>
-	     	<div id="madison-flir-mjpeg"></div>
-	     </div>
-	</section>
+	 <div id="madison-virb1-video-mp4"></div>
 	<script type="text/javascript">
 		var dataProviderController = new OSH.DataProvider.DataProviderController(
 				{
-					bufferingTime : 5 * 1000, // 2 seconds
+					bufferingTime : 0 * 1000, // 2 seconds
 					synchronizedTime : false // does not sync the data
 				});
 
 		// creates datasource
-		var madisonAndroidVideoMjpeg = new OSH.DataProvider.Video(
+		/*var madisonAndroidVideoMjpeg = new OSH.DataProvider.Video(
 				"madisonAndroidVideoMjpeg",
 				"ws://bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7-http://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:46:24.732Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
 				{
@@ -90,36 +70,36 @@
 				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:virb1&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:35:27.413Z/2016-06-08T20:35:06.983Z&replaySpeed=1&responseFormat=video/mp4",
 				{
 					format: "mp4"					
-				});
+				});*/
 		
-		var madisonVirb2VideoH264 = new OSH.DataProvider.Video(
-				"madisonVirb1VideoH264",
-				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:virb2&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:35:27.413Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
+		var madisonVirb1Video = new OSH.DataProvider.Video(
+				"madisonVirb1Video",
+				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:virb1&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:35:27.413Z/2016-06-08T20:35:06.983Z&replaySpeed=1&responseFormat=video/mp4",
 				{
-					format: "h264"					
+					format: "mp4"					
 				});
 		
-		var madisonFlirMjpeg = new OSH.DataProvider.Video(
+		/*var madisonFlirMjpeg = new OSH.DataProvider.Video(
 				"madisonFlirMjpeg",
 				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7:flirone-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:59:31.535Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
 				{
 					format: "mjpeg"					
-				});
+				});*/
 		
 		// creates view
-		var view1 = new OSH.UI.VideoView("madison-android-video-mjpeg",{
+		/*var view1 = new OSH.UI.VideoView("madison-android-video-mjpeg",{
 			dataSourceId:madisonAndroidVideoMjpeg.getId(),
 			format: "mjpeg",
 			css:"video"
-		});
+		});*/
 
 		var view2 = new OSH.UI.VideoView("madison-virb1-video-mp4",{
 			dataSourceId:madisonVirb1Video.getId(),
-			format: "h264",
+			format: "mp4",
 			css:"video"
 		});
 		
-		var view3 = new OSH.UI.VideoView("madison-virb2-video-h264",{
+		/*var view3 = new OSH.UI.VideoView("madison-virb2-video-h264",{
 			dataSourceId:madisonVirb2VideoH264.getId(),
 			format: "mp4",
 			css:"video"
@@ -129,19 +109,19 @@
 			dataSourceId:madisonFlirMjpeg.getId(),
 			format: "mjpeg",
 			css:"video"
-		});
+		});*/
 		
 		// adds datasources to dataProviderController
-		dataProviderController.addDataSource(madisonAndroidVideoMjpeg);
+		//dataProviderController.addDataSource(madisonAndroidVideoMjpeg);
+		//dataProviderController.addDataSource(madisonVirb1Video);
 		dataProviderController.addDataSource(madisonVirb1Video);
-		dataProviderController.addDataSource(madisonVirb2VideoH264);
-		dataProviderController.addDataSource(madisonFlirMjpeg);
+		//dataProviderController.addDataSource(madisonFlirMjpeg);
 		
 		// registers the view into the data provider
-		dataProviderController.registerObserver(view1);
+		//dataProviderController.registerObserver(view1);
 		dataProviderController.registerObserver(view2);
-		dataProviderController.registerObserver(view3);
-		dataProviderController.registerObserver(view4);
+		//dataProviderController.registerObserver(view3);
+		//dataProviderController.registerObserver(view4);
 		
 		dataProviderController.connectAll();
 	</script>

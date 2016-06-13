@@ -1,8 +1,8 @@
 OSH.DataProvider.DataProvider = Class.create({
-  initialize: function(name,url,options) {
+  initialize: function(name,properties,options) {
     // checks if type is WebSocket
-    if(url && url.trim().startsWith("ws://")) {
-      this.connector = new OSH.DataConnector.WebSocketDataConnector(url);
+    if(properties.protocol == "ws") {
+      this.connector = new OSH.DataConnector.WebSocketDataConnector(this.buildUrl(properties));
       // connects the callback 
       this.connector.onMessage = this.onMessage.bind(this);
       this.id = "DataSource-"+OSH.Utils.randomUUID();
@@ -51,7 +51,43 @@ OSH.DataProvider.DataProvider = Class.create({
   
   getName: function() {
     return this.name;
+  },
+  
+  buildUrl: function(properties) {
+	  var url = "";
+	  
+	  // adds protocol
+	  url += properties.protocol + "://";
+	  
+	  // adds endpoint url
+	  url += properties.endpointUrl+"?";
+	  
+	  // adds service
+	  url += "service="+properties.service+"&";
+	  
+	  // adds version
+	  url += "version=2.0&";
+	  
+	  // adds request
+	  url += "request=GetResult&";
+	  
+	  // adds offering
+	  url += "offering="+properties.offeringID+"&";
+	  
+	  // adds observedProperty
+	  url += "observedProperty="+properties.observedProperty+"&";
+	  
+	  // adds temporalFilter
+	  url += "temporalFilter=phenomenonTime,"+properties.startTime+"/"+properties.endTime+"&";
+	  
+	  // adds replaySpeed
+	  url += "replaySpeed="+properties.replaySpeed;
+	  
+	  // adds responseFormat (optional)
+	  if(properties.responseFormat) {
+		  url += "&responseFormat="+properties.responseFormat;
+	  }
+	  
+	  return url;
   }
-  
-  
 });

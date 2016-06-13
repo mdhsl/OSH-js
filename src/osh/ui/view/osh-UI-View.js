@@ -27,5 +27,7 @@ OSH.UI.View = Class.create({
     
     getDivId: function() {
       return this.divId;
-    }
+    },
+    
+    selectDataView: function(dataSourceIds) {}
 });

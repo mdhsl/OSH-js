@@ -3,8 +3,9 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		$super(divId);
 		this.stylerToObj = {};
 		this.initMap();
-		this.lastRec = null;
-		this.selectedStylers = [];
+		this.lastRec = {};
+		this.selectedDataSources = [];
+		this.dataSources = [];
 	},
 	
 	/**
@@ -75,19 +76,23 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	},
 	
 	setData: function(dataSourceId,data) {
+		if(this.dataSources.indexOf(dataSourceId) == -1) {
+			this.dataSources.push(dataSourceId);
+		}
+		var selected = (this.selectedDataSources.indexOf(dataSourceId) > -1);
+		
 		for(var i=0;i < this.stylers.length;i++) {
-			this.stylers[i].setData(dataSourceId,data,this);
-			this.lastRec = data;
+			this.stylers[i].setData(dataSourceId,data,this,{
+				selected:selected
+			});
+			this.lastRec[dataSourceId] = data;
 		}
 	},
 	
 	selectDataView: function($super,dataSourceIds) {
-		for(var j=0; j < dataSourceIds.length;j++) {
-			for(var i=0;i < this.stylers.length;i++) {
-				this.stylers[i].setData(dataSourceIds[j],this.lastRec,this,{
-					selected:true
-				});
-			}
+		this.selectedDataSources = dataSourceIds;
+		for(var j=0; j < this.dataSources.length;j++) {
+			this.setData(this.dataSources[j],this.lastRec[this.dataSources[j]]);
 		}
 	},
 	

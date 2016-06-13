@@ -1,6 +1,6 @@
 OSH.DataProvider.VideoH264 = Class.create(OSH.DataProvider.DataProvider,{
-  initialize: function($super,name,url,options) {
-    $super(name,url,options);
+  initialize: function($super,name,properties,options) {
+    $super(name,properties,options);
   },
   
   parseTimeStamp: function($super,data){
