@@ -155,8 +155,8 @@ OSH.UI.CesiumView = Class.create(OSH.UI.View, {
     		marker.position = Cesium.Cartesian3.fromDegrees(lon, lat, altitude);
     		marker.billboard.image = imgIcon;
     		
-    		if (this.first && this.viewer.trackedEntity != 'undefined') {
-    			this.viewer.zoomTo(this.viewer.entities, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(-10), Cesium.Math.toRadians(-30),3000));
+    		if (this.first) {
+    			this.viewer.zoomTo(this.viewer.entities, new Cesium.HeadingPitchRange(Cesium.Math.toRadians(30), Cesium.Math.toRadians(-30),18000));
     			this.first = false;
     		}
         }

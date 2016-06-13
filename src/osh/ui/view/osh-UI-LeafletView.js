@@ -101,7 +101,7 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		  this.map = new L.Map(this.divId, {
 	         fullscreenControl: true
 	      });
-	      this.map.setView(new L.LatLng(0, 0), 15);
+	      this.map.setView(new L.LatLng(0, 0), 10);
 	      this.initLayers();
 	      this.markers = {};
 	      this.first = true;
