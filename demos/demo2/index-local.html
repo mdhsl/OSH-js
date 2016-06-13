@@ -112,8 +112,8 @@
 			icon : 'images/cameralook.png',
 			iconFunc : {
 				dataSourceId : latLondataSource.getId(),
-				handler : function() {
-					if(this.selected) {
+				handler : function(rec,options) {
+					if(typeof(options) != "undefined" && options.selected) {
 						return 'images/cameralook-selected.png'
 					} else {
 						return 'images/cameralook.png';

@@ -76,11 +76,11 @@ OSH.UI.Styler.Polyline = Class.create(OSH.UI.Styler, {
 		this.dataSourceToStylerMap[dataSourceId].push(fn);
 	},
 	
-	setData: function($super,dataSourceId,rec,view) {
+	setData: function($super,dataSourceId,rec,view,options) {
 		if (dataSourceId in this.dataSourceToStylerMap) {
 			var fnArr = this.dataSourceToStylerMap[dataSourceId];
 			for(var i=0; i < fnArr.length;i++) {
-				fnArr[i](rec.data);
+				fnArr[i](rec.data,options);
 			}
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
 			if(typeof(view) != "undefined"){

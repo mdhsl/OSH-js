@@ -8,6 +8,7 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 		this.color = "#000000";
 		
 		this.functions = [];
+		this.options = {};
 		
 		if(typeof(properties.location) != "undefined"){
 			this.location = properties.location;
@@ -27,29 +28,29 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 		
 		if(typeof(properties.locationFunc) != "undefined") {
 			this.functions.push(properties.locationFunc);
-			var fn = function(rec) {
-				this.location = properties.locationFunc.handler(rec);
+			var fn = function(rec,options) {
+				this.location = properties.locationFunc.handler(rec,options);
 			}.bind(this);
 			this.addFn(properties.locationFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.orientationFunc) != "undefined") {
-			var fn = function(rec) {
-				this.orientation = properties.orientationFunc.handler(rec);
+			var fn = function(rec,options) {
+				this.orientation = properties.orientationFunc.handler(rec,options);
 			}.bind(this);
 			this.addFn(properties.orientationFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.iconFunc) != "undefined") {
-			var fn = function(rec) {
-				this.icon = properties.iconFunc.handler(rec);
+			var fn = function(rec,options) {
+				this.icon = properties.iconFunc.handler(rec,options);
 			}.bind(this);
 			this.addFn(properties.iconFunc.dataSourceId,fn);
 		}
 		
 		if(typeof(properties.colorFunc) != "undefined") {
-			var fn = function(rec) {
-				this.color = properties.colorFunc.handler(rec);
+			var fn = function(rec,options) {
+				this.color = properties.colorFunc.handler(rec,options);
 			}.bind(this);
 			this.addFn(properties.colorFunc.dataSourceId,fn);
 		}
@@ -61,14 +62,24 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 		this.dataSourceToStylerMap[dataSourceId].push(fn);
 	},
 	
-	setData: function($super,dataSourceId,rec,view) {
+	setData: function($super,dataSourceId,rec,view,options) {
 		if (dataSourceId in this.dataSourceToStylerMap) {
+			var opt;
+			if( typeof(options) != "undefined") {
+				opt = options;
+				this.options[dataSourceId] = options;
+			} else {
+				//try to load last state if any
+				if(dataSourceId in this.options) {
+					opt = this.options[dataSourceId];
+				}
+			}
 			var fnArr = this.dataSourceToStylerMap[dataSourceId];
 			for(var i=0; i < fnArr.length;i++) {
-				fnArr[i](rec.data);
+				fnArr[i](rec.data,opt);
 			}
 			//if(typeof(view) != "undefined" && view.hasOwnProperty('updateMarker')){
-			if(typeof(view) != "undefined"){
+			if(typeof(view) != "undefined") {
 				view.updateMarker(this,rec.timeStamp);
 			}
 		}
@@ -80,28 +91,5 @@ OSH.UI.Styler.PointMarker = Class.create(OSH.UI.Styler, {
 			res.push(i);
 		}
 		return res;
-	},
-	
-    select: function($super,dataSourceIds) {
-    	for(var i=0;i < dataSourceIds.length;i++) {
-    		if(dataSourceIds[i] in this.dataSourceToStylerMap){
-    			if(typeof(this.properties.locationFunc) != "undefined") {
-    				this.properties.locationFunc.selected = true;
-    			}
-    			
-    			if(typeof(this.properties.orientationFunc) != "undefined") {
-    				this.properties.orientationFunc.selected = true;
-    			}
-    			
-    			if(typeof(this.properties.iconFunc) != "undefined") {
-    				this.properties.iconFunc.selected = true;
-    			}
-    			
-    			if(typeof(this.properties.colorFunc) != "undefined") {
-    				this.properties.colorFunc.selected = true;
-    			}
-    			break;
-    		}
-    	}
 	}
 });

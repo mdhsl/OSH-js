@@ -5,16 +5,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
     <title>OSH Leaflet viewer</title>
     
-    <!-- LEAFLET libs -->
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />	
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
-    <!-- FullScreen -->
-    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    <script type="text/javascript" src= "../../vendor/broadway/broadway-all.min.js"></script>
+    <script type="text/javascript" src= "../../vendor/broadway/YUVCanvas.js"></script>
+    <script type="text/javascript" src= "../../vendor/broadway/Decoder.js"></script>
+    <script type="text/javascript" src= "../../vendor/broadway/Player.js"></script>
     
-    <!-- OSH libs -->
-    <!-- Hashtable -->
-    <script type="text/javascript" src= "../../src/common/jhashtable.js"></script>
     <script type="text/javascript" src= "../../src/common/prototype.min.js"></script>
     
     <!-- OSH Core -->
@@ -43,21 +38,38 @@
 	<style media="screen" type="text/css">
 	html, body {
 		height: 100%;
-		overflow: hidden;
 		margin: 0;
 	}
 	
-	.map {relative;
-		bottom: 0;
-		width: 100%;
-		height: 100%;
+	.video {
+		width: 400px;
+		height: 400px;
 	}
+	
 	</style>
 </head>
     <body>
      <h2>This is an example of MP4 RealTime data use</h2>
-     <div id="container" class="map"></div>
-
+     <section style="display:inline;float:left;margin-right:60px">
+	     <div>
+	     	<h3>Madison android video mjpeg</h3>
+	     	<div id="madison-android-video-mjpeg"></div>
+	     </div>
+	     <div>
+	     	<h3>Madison virb1 video h264</h3>
+	     	<div id="madison-virb1-video-h264"></div>
+	     </div>
+     </section>
+     <section style="display:inline;float:right;margin-right:50%">
+	     <div>
+	     	<h3>Madison virb2 video Mp4</h3>
+	     	<div id="madison-virb2-video-mp4"></div>
+	     </div>
+	     <div>
+	     	<h3>Madison flir video mjpeg</h3>
+	     	<div id="madison-flir-mjpeg"></div>
+	     </div>
+	</section>
 	<script type="text/javascript">
 		var dataProviderController = new OSH.DataProvider.DataProviderController(
 				{
@@ -66,25 +78,71 @@
 				});
 
 		// creates datasource
-		var mp4RealTimeSource = new OSH.DataProvider.Video(
-				"mp4Video",
-				"ws://bottsgeo.simple-url.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:dahua&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2080-01-01&responseFormat=video/mp4",
+		var madisonAndroidVideoMjpeg = new OSH.DataProvider.Video(
+				"madisonAndroidVideoMjpeg",
+				"ws://bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7-http://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:46:24.732Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
+				{
+					format: "mjpeg"					
+				});
+		
+		var madisonVirb1VideoH264 = new OSH.DataProvider.Video(
+				"madisonVirb1VideoH264",
+				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:virb1&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:35:27.413Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
+				{
+					format: "h264"					
+				});
+		
+		var madisonVirb2VideoMP4 = new OSH.DataProvider.Video(
+				"madisonVirb1VideoMP4",
+				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:virb2&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:35:27.413Z/2016-06-08T20:35:06.983Z&replaySpeed=1&responseFormat=video/mp4",
 				{
 					format: "mp4"					
 				});
 		
+		var madisonFlirMjpeg = new OSH.DataProvider.Video(
+				"madisonFlirMjpeg",
+				"ws://www.bottsgeo.com:8080/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:android:device:89845ed469b7edc7:flirone-sos&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=time,2016-06-08T19:59:31.535Z/2016-06-08T20:35:06.983Z&replaySpeed=1",
+				{
+					format: "mjpeg"					
+				});
+		
 		// creates view
-		var view = new OSH.UI.VideoView("container",{
-			dataSourceId:mp4RealTimeSource.getId(),
-			format: "mp4"
+		var view1 = new OSH.UI.VideoView("madison-android-video-mjpeg",{
+			dataSourceId:madisonAndroidVideoMjpeg.getId(),
+			format: "mjpeg",
+			css:"video"
 		});
 
+		var view2 = new OSH.UI.VideoView("madison-virb1-video-h264",{
+			dataSourceId:madisonVirb1VideoH264.getId(),
+			format: "h264",
+			css:"video"
+		});
+		
+		var view3 = new OSH.UI.VideoView("madison-virb2-video-mp4",{
+			dataSourceId:madisonVirb2VideoMP4.getId(),
+			format: "mp4",
+			css:"video"
+		});
+		
+		var view4 = new OSH.UI.VideoView("madison-flir-mjpeg",{
+			dataSourceId:madisonFlirMjpeg.getId(),
+			format: "mjpeg",
+			css:"video"
+		});
+		
 		// adds datasources to dataProviderController
-		dataProviderController.addDataSource(mp4RealTimeSource);
+		dataProviderController.addDataSource(madisonAndroidVideoMjpeg);
+		dataProviderController.addDataSource(madisonVirb1VideoH264);
+		dataProviderController.addDataSource(madisonVirb2VideoMP4);
+		dataProviderController.addDataSource(madisonFlirMjpeg);
 		
 		// registers the view into the data provider
-		dataProviderController.registerObserver(view);
-
+		dataProviderController.registerObserver(view1);
+		dataProviderController.registerObserver(view2);
+		dataProviderController.registerObserver(view3);
+		dataProviderController.registerObserver(view4);
+		
 		dataProviderController.connectAll();
 	</script>
 

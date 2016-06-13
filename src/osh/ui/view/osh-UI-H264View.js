@@ -53,7 +53,7 @@ OSH.UI.H264View = Class.create(OSH.UI.View, {
 
 	setData : function(dataSourceId, data) {
 		if (dataSourceId == this.dataSourceId) {
-			this.computeFullNalFromRaw(data, function(nal) {
+			this.computeFullNalFromRaw(data.data, function(nal) {
 				var nalType = nal[0] & 0x1F;
 				//7 => PPS
 				//8 => SPS

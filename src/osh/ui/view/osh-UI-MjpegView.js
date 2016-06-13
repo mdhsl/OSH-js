@@ -37,7 +37,7 @@ OSH.UI.MJpegView = Class.create(OSH.UI.View,{
   setData: function(dataSourceId,data) {
 	if(dataSourceId == this.dataSourceId) {  
 	    var oldBlobURL = this.imgTag.src;
-	    this.imgTag.src = data;
+	    this.imgTag.src = data.data;
 	    window.URL.revokeObjectURL(oldBlobURL);
 	}
   }

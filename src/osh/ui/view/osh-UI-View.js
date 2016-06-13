@@ -19,8 +19,6 @@ OSH.UI.View = Class.create({
       // list of stylers
       this.stylers = [];
       this.viewItems = [];
-      // maps datasource to styler
-	  this.mapDataSourceToStylers = new Hashtable(); // map dataSourceId to stylerId
     },
     
     getId: function() {

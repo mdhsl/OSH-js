@@ -3,6 +3,8 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 		$super(divId);
 		this.stylerToObj = {};
 		this.initMap();
+		this.lastRec = null;
+		this.selectedStylers = [];
 	},
 	
 	/**
@@ -75,12 +77,17 @@ OSH.UI.LeafletView = Class.create(OSH.UI.View,{
 	setData: function(dataSourceId,data) {
 		for(var i=0;i < this.stylers.length;i++) {
 			this.stylers[i].setData(dataSourceId,data,this);
+			this.lastRec = data;
 		}
 	},
 	
 	selectDataView: function($super,dataSourceIds) {
-		for(var i=0;i < this.stylers.length;i++) {
-			this.stylers[i].select(dataSourceIds);
+		for(var j=0; j < dataSourceIds.length;j++) {
+			for(var i=0;i < this.stylers.length;i++) {
+				this.stylers[i].setData(dataSourceIds[j],this.lastRec,this,{
+					selected:true
+				});
+			}
 		}
 	},
 	
