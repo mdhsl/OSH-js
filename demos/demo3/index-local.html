@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <title>OSH Leaflet viewer</title>
+    
+    <!-- LEAFLET libs -->
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />	
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+    <!-- FullScreen -->
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+    
+    <!-- OSH libs -->
+    <!-- Hashtable -->
+    <script type="text/javascript" src= "../../src/common/jhashtable.js"></script>
+    <script type="text/javascript" src= "../../src/common/prototype.min.js"></script>
+    
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Controller.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProviderController.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-VideoH264.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-VideoMjpeg.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-VideoMp4.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-Video.js"></script>
+    
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-MjpegView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-Mp4View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-H264View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-VideoView.js"></script>
+	<style media="screen" type="text/css">
+	html, body {
+		height: 100%;
+		overflow: hidden;
+		margin: 0;
+	}
+	
+	.map {relative;
+		bottom: 0;
+		width: 100%;
+		height: 100%;
+	}
+	</style>
+</head>
+    <body>
+     <h2>This is an example of MP4 RealTime data use</h2>
+     <div id="container" class="map"></div>
+
+	<script type="text/javascript">
+		var dataProviderController = new OSH.DataProvider.DataProviderController(
+				{
+					bufferingTime : 5 * 1000, // 2 seconds
+					synchronizedTime : false // does not sync the data
+				});
+
+		// creates datasource
+		var mp4RealTimeSource = new OSH.DataProvider.Video(
+				"mp4Video",
+				"ws://bottsgeo.simple-url.com:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:osh:dahua&observedProperty=http://sensorml.com/ont/swe/property/VideoFrame&temporalFilter=phenomenonTime,now/2080-01-01&responseFormat=video/mp4",
+				{
+					format: "mp4"					
+				});
+		
+		// creates view
+		var view = new OSH.UI.VideoView("container",{
+			dataSourceId:mp4RealTimeSource.getId(),
+			format: "mp4"
+		});
+
+		// adds datasources to dataProviderController
+		dataProviderController.addDataSource(mp4RealTimeSource);
+		
+		// registers the view into the data provider
+		dataProviderController.registerObserver(view);
+
+		dataProviderController.connectAll();
+	</script>
+
+</body>
+</html>

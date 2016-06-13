@@ -1,0 +1,172 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+    <title>OSH Leaflet viewer</title>
+    
+    <!-- LEAFLET libs -->
+    <link rel="stylesheet" href="../../vendor/leaflet/leaflet.css" />	
+    <script src="../../vendor/leaflet/leaflet.js"></script>
+    <!-- FullScreen -->
+    <script src='../../vendor/leaflet/Leaflet.fullscreen.min.js'></script>
+    <link href='../../vendor/leaflet/leaflet.fullscreen.css' rel='stylesheet' />
+    
+    <!--  CESIUM libs -->
+    <script src="../../vendor/cesium/Cesium.js"></script>
+    <link rel="stylesheet" type="text/css" href="../../vendor/cesium/Widgets/widgets.css" />
+
+    <!-- OSH libs -->
+    <!-- Hashtable -->
+    <script type="text/javascript" src= "../../src/common/jhashtable.js"></script>
+    <script type="text/javascript" src= "../../src/common/prototype.min.js"></script>
+    
+    <!-- OSH Core -->
+    <script type="text/javascript" src="../../src/osh/osh-template.js"></script>
+    <!-- OSH buffer sync lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Utils.js"></script>
+    
+    <script type="text/javascript" src="../../src/osh/osh-Buffer.js"></script>
+    <!-- OSH controller lib -->
+    <script type="text/javascript" src="../../src/osh/osh-Controller.js"></script>
+    <!-- OSH Video component parser -->
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataconnector/osh-DataConnector-Websocket.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProviderController.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-LatLonAlt.js"></script>
+    <script type="text/javascript" src="../../src/osh/dataprovider/osh-DataProvider-OrientationQuaternion.js"></script>
+    
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-Styler.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPointMarker.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/styler/osh-UI-StylerPolyline.js"></script>
+    
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-View.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-LeafletView.js"></script>
+    <script type="text/javascript" src="../../src/osh/ui/view/osh-UI-CesiumView.js"></script>
+	<style media="screen" type="text/css">
+	html, body {
+		height: 100%;
+		overflow: hidden;
+		margin: 0;
+	}
+	
+	.leaflet {
+		relative;
+		bottom: 0;
+		width: 47%;
+		height: 400px;
+		float: left;
+  		margin: 0 1.5%;
+	}
+	
+	.cesium {
+		relative;
+		bottom: 0;
+		width: 47%;
+		height: 400px;
+		float: right;
+  		margin: 0 1.5%;
+	}
+	</style>
+</head>
+    <body>
+     <h2>This is an example of Leaflet/Cesium RealTime data use</h2>
+     <div id="container-leaflet" class="leaflet"></div>
+     <div id="container-cesium" class="cesium"></div>
+	<script type="text/javascript">
+		var dataProviderController = new OSH.DataProvider.DataProviderController(
+				{
+					bufferingTime : 0, // 2 seconds
+					synchronizedTime : false // does not sync the data
+				});
+
+		// creates datasource
+		var latLondataSource = new OSH.DataProvider.LatLonAlt(
+				"gps1",
+				"ws://botts.pscloud.org:8181/sensorhub/sos?service=SOS&version=2.0&request=GetResult&offering=urn:mysos:offering02&observedProperty=http://www.opengis.net/def/property/OGC/0/SensorLocation&temporalFilter=phenomenonTime,now/2080-01-01");
+		
+		// creates view
+		var leafletView = new OSH.UI.LeafletView("container-leaflet");
+
+		var cesiumView = new OSH.UI.CesiumView("container-cesium");
+		
+		// creates stylers
+		var markerStyler = new OSH.UI.Styler.PointMarker({
+			location : {
+				x : 10,
+				y : 20,
+				z : 30
+			},
+			locationFunc : {
+				dataSourceId : latLondataSource.getId(),
+				handler : function(rec) {
+					return {
+						x : rec.lon,
+						y : rec.lat,
+						z : rec.alt
+					};
+				}
+			},
+			icon : 'images/cameralook.png',
+			iconFunc : {
+				dataSourceId : latLondataSource.getId(),
+				handler : function() {
+					if(this.selected) {
+						return 'images/cameralook-selected.png'
+					} else {
+						return 'images/cameralook.png';
+					};
+				}
+			}
+		});
+
+		var polylineStyler = new OSH.UI.Styler.Polyline({
+			locationFunc : {
+				dataSourceId : latLondataSource.getId(),
+				handler : function(rec) {
+					return {
+						x : rec.lon,
+						y : rec.lat,
+						z : rec.alt
+					};
+				}
+			},
+			color : 'blue',
+			weight : 5,
+			opacity : .5,
+			smoothFactor : 1,
+			maxPoints : 200
+		});
+
+		// adds view item to the view
+		leafletView.addViewItem({
+			styler : markerStyler
+		});
+
+		leafletView.addViewItem({
+			styler : polylineStyler
+		});
+		
+		cesiumView.addViewItem({
+			styler : markerStyler
+		});
+
+		// adds datasources to dataProviderController
+		dataProviderController.addDataSource(latLondataSource);
+		
+		// registers the view into the data provider
+		dataProviderController.registerObserver(leafletView);
+		dataProviderController.registerObserver(cesiumView);
+
+		// adds controller to interact between views
+		var controller = new OSH.Controller();
+		controller.addView(leafletView);
+		controller.addView(cesiumView);
+		
+		dataProviderController.connectAll();
+	</script>
+
+</body>
+</html>
